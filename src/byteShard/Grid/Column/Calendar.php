@@ -16,21 +16,21 @@ use byteShard\Internal\Grid\CalColumn;
  */
 class Calendar extends CalColumn
 {
-    public bool      $convert_date      = true;
-    protected string $type              = 'calendar';
-    protected string $dhxTypeRw         = Grid\Enum\Type::CALENDAR;
-    protected string $dhxTypeRo         = Grid\Enum\Type::DATERO;
-    protected string $sort              = Grid\Enum\Sort::DATE_GERMAN;
-    protected string $align             = Grid\Enum\Align::CENTER;
-    protected string $filter            = Grid\Enum\Filter::TEXT_ADVANCED;//'#date_filter';
-    protected int    $width             = 100;
-    protected string $client_format     = '';
-    protected string $dbDateFormat      = 'Y-m-d H:i:s.u';
-    protected string $displayDateFormat = 'd.m.Y';
-    protected string $dbTimezone        = 'UTC';
-    protected string $displayTimezone   = 'GMT+1';
-    protected bool   $display_time      = false;
-    protected string $db_column_type    = ColumnType::DATETIME2;
+    public bool          $convert_date      = true;
+    protected string     $type              = 'calendar';
+    protected string     $dhxTypeRw         = Grid\Enum\Type::CALENDAR;
+    protected string     $dhxTypeRo         = Grid\Enum\Type::DATERO;
+    protected string     $sort              = Grid\Enum\Sort::DATE_GERMAN;
+    protected string     $align             = Grid\Enum\Align::CENTER;
+    protected string     $filter            = Grid\Enum\Filter::TEXT_ADVANCED;//'#date_filter';
+    protected int        $width             = 100;
+    protected string     $client_format     = '';
+    protected string     $dbDateFormat      = 'Y-m-d H:i:s.u';
+    protected string     $displayDateFormat = 'd.m.Y';
+    protected string     $dbTimezone        = 'UTC';
+    protected string     $displayTimezone   = 'GMT+1';
+    protected bool       $display_time      = false;
+    protected ColumnType $db_column_type    = ColumnType::DATETIME2;
 
     public function setEnableTime(): void
     {

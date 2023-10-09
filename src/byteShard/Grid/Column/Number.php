@@ -16,14 +16,13 @@ use byteShard\Internal\Grid\Column;
  */
 class Number extends Column
 {
-    protected string $type           = Enum\DB\ColumnType::INT;
-    protected string $dhxTypeRw      = Grid\Enum\Type::NUMERIC;
-    protected string $dhxTypeRo      = Grid\Enum\Type::NUMERIC_READONLY;
-    protected string $sort           = Grid\Enum\Sort::INTEGER;
-    protected string $align          = Grid\Enum\Align::RIGHT;
-    protected string $filter         = Grid\Enum\Filter::NUMERIC;
-    protected int    $width          = 100;
-    protected string $db_column_type = Enum\DB\ColumnType::INT;
+    protected string             $dhxTypeRw      = Grid\Enum\Type::NUMERIC;
+    protected string             $dhxTypeRo      = Grid\Enum\Type::NUMERIC_READONLY;
+    protected string             $sort           = Grid\Enum\Sort::INTEGER;
+    protected string             $align          = Grid\Enum\Align::RIGHT;
+    protected string             $filter         = Grid\Enum\Filter::NUMERIC;
+    protected int                $width          = 100;
+    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::INT;
 
     /**
      * Number constructor.

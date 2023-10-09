@@ -16,14 +16,14 @@ use byteShard\Internal\Grid\Column;
  */
 class Text extends Column
 {
-    protected string $type           = 'text';
-    protected string $dhxTypeRw      = Grid\Enum\Type::TEXT;
-    protected string $dhxTypeRo      = Grid\Enum\Type::TEXT_READONLY;
-    protected string $sort           = Grid\Enum\Sort::STRING;
-    protected string $align          = Grid\Enum\Align::LEFT;
-    protected string $filter         = Grid\Enum\Filter::TEXT_ADVANCED;
-    protected int    $width          = 100;
-    protected string $db_column_type = Enum\DB\ColumnType::VARCHAR;
+    protected string             $type           = 'text';
+    protected string             $dhxTypeRw      = Grid\Enum\Type::TEXT;
+    protected string             $dhxTypeRo      = Grid\Enum\Type::TEXT_READONLY;
+    protected string             $sort           = Grid\Enum\Sort::STRING;
+    protected string             $align          = Grid\Enum\Align::LEFT;
+    protected string             $filter         = Grid\Enum\Filter::TEXT_ADVANCED;
+    protected int                $width          = 100;
+    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
 
     /**
      * Text constructor.

@@ -21,14 +21,14 @@ use Exception;
  */
 class Image extends Column implements EncryptedObjectValueInterface
 {
-    protected string $type           = 'image';
-    protected string $dhxTypeRw      = Grid\Enum\Type::IMAGE;
-    protected string $dhxTypeRo      = Grid\Enum\Type::IMAGE;
-    protected string $sort           = Grid\Enum\Sort::IMAGE;
-    protected string $align          = Grid\Enum\Align::CENTER;
-    protected string $filter         = Grid\Enum\Filter::COMBO_ADVANCED;
-    protected int    $width          = 100;
-    protected string $db_column_type = Enum\DB\ColumnType::VARCHAR;
+    protected string             $type           = 'image';
+    protected string             $dhxTypeRw      = Grid\Enum\Type::IMAGE;
+    protected string             $dhxTypeRo      = Grid\Enum\Type::IMAGE;
+    protected string             $sort           = Grid\Enum\Sort::IMAGE;
+    protected string             $align          = Grid\Enum\Align::CENTER;
+    protected string             $filter         = Grid\Enum\Filter::COMBO_ADVANCED;
+    protected int                $width          = 100;
+    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
     /**
      * @var Grid\Cell\Image[]
      */
@@ -69,7 +69,7 @@ class Image extends Column implements EncryptedObjectValueInterface
     {
         $imageMap = [];
         foreach ($this->metadata as $image) {
-            $events  = $image->getEvents();
+            $events = $image->getEvents();
             $jsLink = false;
             if (!empty($events)) {
                 $eventId = $cell->getEventIDForInteractiveObject($this->field.':'.$image->value, false);
@@ -88,13 +88,13 @@ class Image extends Column implements EncryptedObjectValueInterface
                 $imageMap[$image->value]['eventId'] = $eventId['name'];
             }
             if ($image->tooltip === null) {
-                $tooltip                           = Locale::getArray($this->getLocaleBaseToken().'Cell.Image.'.$image->value.'.Tooltip');
+                $tooltip                          = Locale::getArray($this->getLocaleBaseToken().'Cell.Image.'.$image->value.'.Tooltip');
                 $imageMap[$image->value]['value'] = $tooltip['found'] === true ? $image->image.'^'.$tooltip['locale'] : $image->image;
             } else {
                 $imageMap[$image->value]['value'] = $image->image.'^'.$image->tooltip;
             }
             $imageMap[$image->value]['encryptedValue'] = Session::encrypt($image->value, $cell->getNonce());
-            $imageMap[$image->value]['jsLink'] = $jsLink;
+            $imageMap[$image->value]['jsLink']         = $jsLink;
         }
         return $imageMap;
     }

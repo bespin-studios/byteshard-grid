@@ -16,16 +16,16 @@ use byteShard\Internal\Grid\Column;
  */
 class RowSelector extends Column
 {
-    protected string $type                  = 'rowSelector';
-    protected string $dhxTypeRw             = Grid\Enum\Type::CHECKBOX;
-    protected string $dhxTypeRo             = Grid\Enum\Type::CHECKBOX_READONLY;
-    protected string $sort                  = Grid\Enum\Sort::STRING;
-    protected string $align                 = Grid\Enum\Align::CENTER;
-    protected string $filter                = Grid\Enum\Filter::CHECKBOX;
-    protected int    $width                 = 55;
-    protected string $db_column_type        = Enum\DB\ColumnType::VARCHAR;
-    private bool     $comply_to_access_type = false;
-    private bool     $readonlyHidden        = false;
+    protected string             $type                  = 'rowSelector';
+    protected string             $dhxTypeRw             = Grid\Enum\Type::CHECKBOX;
+    protected string             $dhxTypeRo             = Grid\Enum\Type::CHECKBOX_READONLY;
+    protected string             $sort                  = Grid\Enum\Sort::STRING;
+    protected string             $align                 = Grid\Enum\Align::CENTER;
+    protected string             $filter                = Grid\Enum\Filter::CHECKBOX;
+    protected int                $width                 = 55;
+    protected Enum\DB\ColumnType $db_column_type        = Enum\DB\ColumnType::VARCHAR;
+    private bool                 $comply_to_access_type = false;
+    private bool                 $readonlyHidden        = false;
 
     public function __construct(string $dbField = null, string $name = null, int $width = null)
     {

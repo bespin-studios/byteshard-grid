@@ -50,7 +50,7 @@ abstract class Column
     public bool      $multiline    = true;
     protected bool   $colspan      = false;
 
-    protected string $db_column_type = Enum\DB\ColumnType::VARCHAR;
+    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
     /** @var Event[] */
     private array $events = [];
     /** @var string */
@@ -76,20 +76,13 @@ abstract class Column
     }
 
     /**
-     * @param string $enumDbColumnType
+     * @param Enum\DB\ColumnType $enumDbColumnType
      * @return $this
-     * @throws Exception
      * @API
      */
-    public function setDBColumnType(string $enumDbColumnType): self
+    public function setDBColumnType(Enum\DB\ColumnType $enumDbColumnType): self
     {
-        if (Enum\DB\ColumnType::is_enum($enumDbColumnType)) {
-            $this->db_column_type = $enumDbColumnType;
-        } else {
-            $e = new Exception(__METHOD__.": Method only accepts enums of type Enum\\DB\\ColumnType. Input was '".gettype($enumDbColumnType)."'");
-            $e->setLocaleToken('byteShard.form.invalidArgument.setDBColumnType.enum_DB_ColumnType');
-            throw $e;
-        }
+        $this->db_column_type = $enumDbColumnType;
         return $this;
     }
 
@@ -269,12 +262,12 @@ abstract class Column
      */
     public function getDBColumnType(): string
     {
-        if ($this->db_column_type === '') {
+        /*if ($this->db_column_type === '') {
             // TODO: get default db column type from appSettings instead of session
             trigger_error(__METHOD__.': empty db_column_type is deprecated.', E_USER_DEPRECATED);
             return $_SESSION[MAIN]->getDefaultDBColumnType('grid', $this->type);
-        }
-        return $this->db_column_type;
+        }*/
+        return $this->db_column_type->value;
     }
 
     /**
