@@ -16,17 +16,17 @@ use byteShard\Internal\Grid\Column;
  */
 class Link extends Column
 {
-    protected string        $type           = 'link';
-    protected string        $dhxTypeRw      = Grid\Enum\Type::LINK;
-    protected string        $dhxTypeRo      = Grid\Enum\Type::LINK;
-    protected string        $sort           = Grid\Enum\Sort::STRING;
-    protected string        $align          = Grid\Enum\Align::LEFT;
-    protected string        $filter         = Grid\Enum\Filter::TEXT;
-    protected int           $width          = 100;
-    protected string        $db_column_type = Enum\DB\ColumnType::VARCHAR;
-    private Enum\LinkTarget $target         = Enum\LinkTarget::BLANK;
-    private string          $url;
-    private string          $tooltip;
+    protected string             $type           = 'link';
+    protected string             $dhxTypeRw      = Grid\Enum\Type::LINK;
+    protected string             $dhxTypeRo      = Grid\Enum\Type::LINK;
+    protected string             $sort           = Grid\Enum\Sort::STRING;
+    protected string             $align          = Grid\Enum\Align::LEFT;
+    protected string             $filter         = Grid\Enum\Filter::TEXT;
+    protected int                $width          = 100;
+    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
+    private Enum\LinkTarget      $target         = Enum\LinkTarget::BLANK;
+    private string               $url;
+    private string               $tooltip;
     /** @var Grid\Cell\LinkMap[] */
     private array $linkMap = [];
 

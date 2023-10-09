@@ -17,17 +17,17 @@ use byteShard\Internal\Grid\IDReference;
  */
 class Select extends Column implements IDReference
 {
-    protected string         $type           = 'select';
-    protected string         $dhxTypeRw      = Grid\Enum\Type::SELECT;
-    protected string         $dhxTypeRo      = Grid\Enum\Type::SELECT_READONLY;
-    protected string         $sort           = Grid\Enum\Sort::STRING;
-    protected string         $align          = Grid\Enum\Align::LEFT;
-    protected string         $filter         = Grid\Enum\Filter::COMBO_ADVANCED;
-    protected int            $width          = 100;
-    protected array          $comboOptions   = [];
-    private \byteShard\Combo $combo;
-    protected string         $db_column_type = Enum\DB\ColumnType::VARCHAR;
-    public array             $idReferences   = [];
+    protected string             $type           = 'select';
+    protected string             $dhxTypeRw      = Grid\Enum\Type::SELECT;
+    protected string             $dhxTypeRo      = Grid\Enum\Type::SELECT_READONLY;
+    protected string             $sort           = Grid\Enum\Sort::STRING;
+    protected string             $align          = Grid\Enum\Align::LEFT;
+    protected string             $filter         = Grid\Enum\Filter::COMBO_ADVANCED;
+    protected int                $width          = 100;
+    protected array              $comboOptions   = [];
+    private \byteShard\Combo     $combo;
+    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
+    public array                 $idReferences   = [];
 
     public function __construct($dbField, $name, array|\byteShard\Combo $options = [], int $width = null, int|Enum\Access $accessType = 1)
     {

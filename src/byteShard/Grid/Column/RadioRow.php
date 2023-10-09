@@ -16,12 +16,12 @@ use byteShard\Internal\Grid\Column;
  */
 class RadioRow extends Column
 {
-    protected string $type           = 'radio_row';
-    protected string $dhxTypeRw      = Grid\Enum\Type::RADIO_ROW;
-    protected string $dhxTypeRo      = Grid\Enum\Type::RADIO_ROW_READONLY;
-    protected string $sort           = Grid\Enum\Sort::STRING;
-    protected string $align          = Grid\Enum\Align::CENTER;
-    protected string $filter         = Grid\Enum\Filter::CHECKBOX;
-    protected int    $width          = 100;
-    protected string $db_column_type = Enum\DB\ColumnType::VARCHAR;
+    protected string             $type           = 'radio_row';
+    protected string             $dhxTypeRw      = Grid\Enum\Type::RADIO_ROW;
+    protected string             $dhxTypeRo      = Grid\Enum\Type::RADIO_ROW_READONLY;
+    protected string             $sort           = Grid\Enum\Sort::STRING;
+    protected string             $align          = Grid\Enum\Align::CENTER;
+    protected string             $filter         = Grid\Enum\Filter::CHECKBOX;
+    protected int                $width          = 100;
+    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
 }
