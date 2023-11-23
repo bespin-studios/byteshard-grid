@@ -21,9 +21,7 @@ use DateTimeZone;
 
 class ColumnProxy
 {
-    public string $encryptedName;
-    public string $field;
-
+    public string        $encryptedName;
     private string       $specialType                           = '';
     private bool         $convertDate                           = false;
     private array        $idReferences                          = [];
@@ -49,6 +47,8 @@ class ColumnProxy
     private string       $tooltip;
     private string       $url;
     private array        $linkMap                               = [];
+    private string       $dataBinding;
+    private string       $id;
 
     // grid-wide settings
     private bool $wrapGridContents;
@@ -57,7 +57,8 @@ class ColumnProxy
     {
         $this->columnType       = $column::class;
         $this->treeColumn       = $column::class === Tree::class;
-        $this->field            = $column->field;
+        $this->id               = $column->getId();
+        $this->dataBinding      = $column->getDataBinding();
         $this->encryptedName    = $column->encryptedName;
         $this->wrapText         = $column->multiline;
         $this->dateField1       = $column->dateField1 ?? '';
@@ -150,7 +151,7 @@ class ColumnProxy
     public function getValue(object $data, string $rowId, string $rowType, array &$localeCache, int $accessType): array
     {
         if ($this->treeColumn) {
-            $this->field = $rowType;
+            $this->dataBinding = $rowType;
         }
         $value = '';
         switch ($this->specialType) {
@@ -163,21 +164,23 @@ class ColumnProxy
                 }
                 break;
             case 'idReference':
-                $value = $this->idReferences[$data->{$this->field}] ?? '';
+                $value = $this->idReferences[$data->{$this->dataBinding}] ?? '';
                 break;
             case 'image':
-                if (isset($data->{$this->field}, $this->imageMap[$data->{$this->field}])) {
-                    $value          = $this->imageMap[$data->{$this->field}]['value'];
-                    $encryptedValue = $this->imageMap[$data->{$this->field}]['encryptedValue'] ?? '';
-                    if ($this->imageMap[$data->{$this->field}]['jsLink'] === true) {
+                if (isset($data->{$this->dataBinding}, $this->imageMap[$data->{$this->dataBinding}])) {
+                    $value          = $this->imageMap[$data->{$this->dataBinding}]['value'];
+                    $encryptedValue = $this->imageMap[$data->{$this->dataBinding}]['encryptedValue'] ?? '';
+                    if ($this->imageMap[$data->{$this->dataBinding}]['jsLink'] === true) {
                         $value .= '^javascript:doOnGridLink("'.$this->cellId.'","'.$rowId.'","'.$this->encryptedName.'","'.$encryptedValue.'")^_self';
                     }
                 }
                 break;
             case 'link':
-                $value = $data->{$this->field} ?? '';
-                if ($this->convertDate === true && $value !== '') {
+                $value = $data->{$this->dataBinding} ?? '';
+                if ($this->convertDate === true) {
                     $value = $this->getDate($value);
+                } elseif ($value instanceof DateTime) {
+                    $value = $value->format($this->clientFormat);
                 } else {
                     $value = Strings::purify($value);
                 }
@@ -188,8 +191,8 @@ class ColumnProxy
                 }
                 break;
             case 'linkMap':
-                if (isset($data->{$this->field}, $this->linkMap[$data->{$this->field}])) {
-                    $map = $this->linkMap[$data->{$this->field}];
+                if (isset($data->{$this->dataBinding}, $this->linkMap[$data->{$this->dataBinding}])) {
+                    $map = $this->linkMap[$data->{$this->dataBinding}];
                     if ($map['js'] === true) {
                         $value = $map['value'].'^'.$map['tooltip'].'^javascript:doOnGridLink("'.$this->cellId.'","'.$rowId.'","'.$this->encryptedName.'")^_self';
                     } else {
@@ -202,12 +205,14 @@ class ColumnProxy
                     if ($this->hideRowSelectorCheckboxOnReadOnlyRows === true && $accessType < AccessType::READWRITE) {
                         $value = 3;
                     } else {
-                        $value = $data->{$this->field} ?? 0;
+                        $value = $data->{$this->dataBinding} ?? 0;
                     }
                 } else {
-                    $value = $data->{$this->field} ?? '';
-                    if ($this->convertDate === true && $value !== '') {
+                    $value = $data->{$this->dataBinding} ?? '';
+                    if ($this->convertDate === true) {
                         $value = $this->getDate($value);
+                    } elseif ($value instanceof DateTime) {
+                        $value = $value->format($this->clientFormat);
                     } else {
                         $value = Strings::purify($value);
                     }
@@ -272,11 +277,11 @@ class ColumnProxy
         }
 
         // row span implementation
-        if (isset($data->{$this->field.'_SPAN'}) && $data->{$this->field.'_SPAN'} > 0) {
+        if (isset($data->{$this->dataBinding.'_SPAN'}) && $data->{$this->dataBinding.'_SPAN'} > 0) {
             $this->rowSpan = true;
             if ($this->span === 0) {
-                $result['attributes']['rowspan'] = $data->{$this->field.'_SPAN'};
-                $this->span                      = $data->{$this->field.'_SPAN'};
+                $result['attributes']['rowspan'] = $data->{$this->dataBinding.'_SPAN'};
+                $this->span                      = $data->{$this->dataBinding.'_SPAN'};
             }
             $this->span--;
         }
@@ -340,12 +345,15 @@ class ColumnProxy
         return $sign === '-' ? -$total : $total;
     }
 
-    public function getDate(string $value): string
+    private function getDate(string|DateTime $value): string
     {
-        if (!empty($value)) {
+        if ($value instanceof DateTime) {
+            return $value->setTimezone($this->clientTimezone)->format($this->clientFormat);
+        }
+        if ($value !== '') {
             $date = DateTime::createFromFormat($this->dbFormat, $value, $this->dbTimezone);
             if ($date === false) {
-                throw new Exception(__METHOD__.': could not create DateTime::createFromFormat. Use column->setServerDateFormat() or App\Settings::getDateFormat($objectType). Value: '.$value.' - Format: '.$this->dbFormat.' - Column: '.$this->field);
+                throw new Exception(__METHOD__.': could not create DateTime::createFromFormat. Use column->setServerDateFormat() or App\Settings::getDateFormat($objectType). Value: '.$value.' - Format: '.$this->dbFormat.' - Column: '.$this->id);
             }
             return $date->setTimezone($this->clientTimezone)->format($this->clientFormat);
         }

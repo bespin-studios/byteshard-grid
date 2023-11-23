@@ -27,12 +27,12 @@ class RowSelector extends Column
     private bool                 $comply_to_access_type = false;
     private bool                 $readonlyHidden        = false;
 
-    public function __construct(string $dbField = null, string $name = null, int $width = null)
+    public function __construct(string $id = null, string $label = null, int $width = null, ?string $dataBinding = null)
     {
-        $dbField = 'rowSelector';
-        $name    = '#master_checkbox';
+        $id    = 'rowSelector';
+        $label = '#master_checkbox';
         $this->setUnrestrictedAccess();
-        parent::__construct($dbField, $name, $width);
+        parent::__construct(id: $id, label: $label, width: $width, dataBinding: $dataBinding);
     }
 
     /**

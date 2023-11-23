@@ -25,8 +25,8 @@ class Tree extends Column
     protected int                $width          = 100;
     protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
 
-    public function __construct(?string $name = null, ?int $width = null, int $accessType = 1)
+    public function __construct(?string $label = null, ?int $width = null, int $accessType = 1, ?string $dataBinding = null)
     {
-        parent::__construct('TreeColumn', $name, $width, $accessType);
+        parent::__construct(id: 'TreeColumn', label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
     }
 }

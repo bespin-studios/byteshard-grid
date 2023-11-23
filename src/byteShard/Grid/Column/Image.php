@@ -36,14 +36,15 @@ class Image extends Column implements EncryptedObjectValueInterface
 
     /**
      * Image constructor.
-     * @param string $dbField
-     * @param string|null $name
+     * @param string $id
+     * @param string|null $label
      * @param int|null $width
      * @param int $accessType
+     * @param string|null $dataBinding
      */
-    public function __construct(string $dbField, ?string $name = null, ?int $width = null, int $accessType = Enum\AccessType::R)
+    public function __construct(string $id, ?string $label = null, ?int $width = null, int $accessType = Enum\AccessType::R, ?string $dataBinding = null)
     {
-        parent::__construct($dbField, $name, $width, $accessType);
+        parent::__construct(id: $id, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
     }
 
     /**
@@ -72,7 +73,7 @@ class Image extends Column implements EncryptedObjectValueInterface
             $events = $image->getEvents();
             $jsLink = false;
             if (!empty($events)) {
-                $eventId = $cell->getEventIDForInteractiveObject($this->field.':'.$image->value, false);
+                $eventId = $cell->getEventIDForInteractiveObject($this->getId().':'.$image->value, false);
                 if ($eventId['registered'] === false) {
                     foreach ($events as $event) {
                         $actions = $event->getActionArray();

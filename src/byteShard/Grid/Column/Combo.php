@@ -31,15 +31,16 @@ class Combo extends Column implements IDReference
 
     /**
      * Combo constructor.
-     * @param string $dbField
-     * @param string|null $name
+     * @param string $id
+     * @param string|null $label
      * @param array|\byteShard\Combo $options
      * @param int|null $width
      * @param int $accessType
+     * @param string|null $dataBinding
      */
-    public function __construct(string $dbField, string $name = null, array|\byteShard\Combo $options = [], int $width = null, int $accessType = 1)
+    public function __construct(string $id, string $label = null, array|\byteShard\Combo $options = [], int $width = null, int $accessType = 1, ?string $dataBinding = null)
     {
-        parent::__construct($dbField, $name, $width, $accessType);
+        parent::__construct(id: $id, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
         if ($options instanceof \byteShard\Combo) {
             $this->combo = $options;
         } else {
