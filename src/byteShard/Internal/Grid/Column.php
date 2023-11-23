@@ -7,6 +7,7 @@
 namespace byteShard\Internal\Grid;
 
 use byteShard\Enum;
+use byteShard\Enum\Access;
 use byteShard\Grid\Column\RowSelector;
 use byteShard\Grid\Enum\Sort;
 use byteShard\Internal\Event\Event;
@@ -24,7 +25,6 @@ abstract class Column
 {
     use PermissionImplementation;
 
-    public string $field;
     public string $encryptedName;
     public bool   $convert_date           = false;
     public bool   $jsLink                 = false;
@@ -53,26 +53,39 @@ abstract class Column
     protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
     /** @var Event[] */
     private array $events = [];
-    /** @var string */
     private string $localeBaseToken = '';
     private string $className       = '';
+    private string $dataBinding;
+    private string $id;
 
     /**
      * Column constructor.
-     * @param string $dbField
-     * @param null|string $name
+     * @param string $id
+     * @param null|string $label
      * @param null|int $width
-     * @param int|Enum\Access $accessType
+     * @param int|Access $accessType
+     * @param null|string $dataBinding if dataBinding is null, it will be mapped to the id
      */
-    public function __construct(string $dbField, string $name = null, int $width = null, int|Enum\Access $accessType = Enum\AccessType::R)
+    public function __construct(string $id, ?string $label = null, int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)
     {
-        $this->field         = $dbField;
-        $this->encryptedName = Session::encrypt($dbField);
-        $this->name          = $name;
+        $this->id            = $id;
+        $this->encryptedName = Session::encrypt($id);
+        $this->name          = $label;
         if ($width !== null) {
             $this->width = $width;
         }
+        $this->dataBinding = $dataBinding ?? $id;
         $this->setAccessType($accessType);
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function getDataBinding(): string
+    {
+        return $this->dataBinding;
     }
 
     /**
@@ -206,13 +219,13 @@ abstract class Column
 
     public function getField(): string
     {
-        return $this->field;
+        return $this->id;
     }
 
     public function getLabel(): string
     {
         if ($this->name === null) {
-            $locale = Locale::getArray($this->localeBaseToken.'Column.'.$this->field.'.Label');
+            $locale = Locale::getArray($this->localeBaseToken.'Column.'.$this->id.'.Label');
             if ($locale['found'] === true) {
                 return $locale['locale'];
             }
@@ -369,7 +382,7 @@ abstract class Column
 
     public function getEncryptedName(string $cellNonce = ''): string
     {
-        $encrypted['i'] = $this->field;
+        $encrypted['i'] = $this->id;
         $validations    = $this->getValidations();
         if ($validations !== null) {
             $encrypted['v'] = $validations;
@@ -385,7 +398,7 @@ abstract class Column
         $encrypted['t'] = $gridColumnClass;
         $encrypted['l'] = $this->getLabel();
         //$encrypted['c']
-        $nonce               = substr(md5($cellNonce.$this->field), 0, 24);
+        $nonce               = substr(md5($cellNonce.$this->id), 0, 24);
         $this->encryptedName = Session::encrypt(json_encode($encrypted), $nonce);
         return $this->encryptedName;
     }

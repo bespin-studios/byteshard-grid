@@ -36,7 +36,7 @@ class SetCellValue extends Action
         $this->newValues[$rowIdObject->getEncodedRowId()] = [
             'row' => $rowIdObject,
             'col' => [
-                $column->field => [
+                $column->getId() => [
                     'column'   => $column,
                     'newValue' => $newValue
                 ]

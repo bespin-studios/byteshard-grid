@@ -31,11 +31,12 @@ class DateDifference extends CalColumn
      * @param string $dbField2
      * @param string|null $label
      * @param int|null $width
-     * @param int $access_type
+     * @param int $accessType
+     * @param string|null $dataBinding
      */
-    public function __construct(string $dbField1, string $dbField2, string $label = null, int $width = null, int $access_type = Enum\AccessType::R)
+    public function __construct(string $dbField1, string $dbField2, string $label = null, int $width = null, int $accessType = Enum\AccessType::R, ?string $dataBinding = null)
     {
-        parent::__construct($dbField1, $label, $width, $access_type);
+        parent::__construct(id: $dbField1, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
         $this->dateDifferenceColumn = true;
         $this->dateField1           = $dbField1;
         $this->dateField2           = $dbField2;

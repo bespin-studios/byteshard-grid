@@ -29,9 +29,9 @@ class Select extends Column implements IDReference
     protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
     public array                 $idReferences   = [];
 
-    public function __construct($dbField, $name, array|\byteShard\Combo $options = [], int $width = null, int|Enum\Access $accessType = 1)
+    public function __construct($id, $label, array|\byteShard\Combo $options = [], int $width = null, int|Enum\Access $accessType = 1, ?string $dataBinding = null)
     {
-        parent::__construct($dbField, $name, $width, $accessType);
+        parent::__construct(id: $id, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
         if ($options instanceof \byteShard\Combo) {
             $this->combo = $options;
         } else {

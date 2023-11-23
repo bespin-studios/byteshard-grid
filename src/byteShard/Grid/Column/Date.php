@@ -34,15 +34,16 @@ class Date extends CalColumn
 
     /**
      * Date constructor.
-     * @param string $dbField
-     * @param ?string $name
+     * @param string $id
+     * @param ?string $label
      * @param null $width
      * @param int $accessType
      * @param string $displayDateFormat
+     * @param string|null $dataBinding
      */
-    public function __construct(string $dbField, ?string $name = null, $width = null, int $accessType = Enum\AccessType::R, string $displayDateFormat = '')
+    public function __construct(string $id, ?string $label = null, $width = null, int $accessType = Enum\AccessType::R, string $displayDateFormat = '', ?string $dataBinding = null)
     {
-        parent::__construct($dbField, $name, $width, $accessType);
+        parent::__construct(id: $id, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
         if ($displayDateFormat !== '') {
             $this->displayDateFormat = $displayDateFormat;
         }

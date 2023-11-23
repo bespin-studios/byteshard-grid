@@ -26,13 +26,14 @@ class Number extends Column
 
     /**
      * Number constructor.
-     * @param string $dbField
-     * @param string|null $name
+     * @param string $id
+     * @param string|null $label
      * @param int|null $width
      * @param int $accessType
+     * @param string|null $dataBinding
      */
-    public function __construct(string $dbField, string $name = null, int $width = null, int $accessType = Enum\AccessType::R)
+    public function __construct(string $id, string $label = null, int $width = null, int $accessType = Enum\AccessType::R, ?string $dataBinding = null)
     {
-        parent::__construct($dbField, $name, $width, $accessType);
+        parent::__construct(id: $id, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
     }
 }
