@@ -10,7 +10,7 @@ use TCPDF;
 
 class CustomTCPDF extends TCPDF
 {
-    public function Footer()
+    public function Footer(): void
     {
         $cur_y = $this->GetY();
         $original_margins = $this->getOriginalMargins();

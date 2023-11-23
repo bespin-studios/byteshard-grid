@@ -29,7 +29,7 @@ class SetCellValue extends Action
     /**
      * @API
      */
-    public function setNewValue(array $rowId, Column $column, string $newValue)
+    public function setNewValue(array $rowId, Column $column, string $newValue): void
     {
         $rowIdObject = new RowID($rowId);
 

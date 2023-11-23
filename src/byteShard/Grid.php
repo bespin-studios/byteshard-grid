@@ -185,7 +185,7 @@ abstract class Grid extends CellContent implements GridInterface
      *
      * @session write
      */
-    private function setRequestTimestamp()
+    private function setRequestTimestamp(): void
     {
         $this->cell->setRequestTimestamp();
     }
@@ -266,7 +266,7 @@ abstract class Grid extends CellContent implements GridInterface
 
     private array $columnValidations = [];
 
-    private function createColumnProxies(string $nonce)
+    private function createColumnProxies(string $nonce): void
     {
         $serverTimeZone = Settings::getServerTimeZone();
         $clientTimeZone = Session::getClientTimeZone();
@@ -613,7 +613,7 @@ abstract class Grid extends CellContent implements GridInterface
     /**
      * @session none
      */
-    private function buildFlatGrid(string $nonce)
+    private function buildFlatGrid(string $nonce): void
     {
         if (count($this->columnProxies) > 0) {
             $rowIdPart     = [];
@@ -666,7 +666,7 @@ abstract class Grid extends CellContent implements GridInterface
     /**
      * @session none
      */
-    private function buildTreeGrid(string $nonce)
+    private function buildTreeGrid(string $nonce): void
     {
         //TODO: support functionality for parent displaying child data, parent displaying parent data and parent displaying aggregated child data
         if (count($this->columns) > 0 && !empty($this->nodes)) {
@@ -731,7 +731,7 @@ abstract class Grid extends CellContent implements GridInterface
     /**
      * @session none
      */
-    private function selectLastSelectedRow()
+    private function selectLastSelectedRow(): void
     {
         if ($this->selectLastSelected === true && $this->selectedID instanceof \byteShard\ID\ID) {
             $ids = $this->selectedID->getIds();
@@ -746,7 +746,7 @@ abstract class Grid extends CellContent implements GridInterface
         }
     }
 
-    private function openTreeWithSelectedChildren()
+    private function openTreeWithSelectedChildren(): void
     {
         // rowId json is generated in the order of nodes, create json for each level but the last one
         $nodeCount = count($this->nodes) - 1;

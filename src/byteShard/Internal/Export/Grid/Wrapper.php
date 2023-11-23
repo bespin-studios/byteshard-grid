@@ -52,12 +52,17 @@ class Wrapper
      * @param string $title
      * @param string $type
      * @return FileInterface
-     * @throws Exception
      */
     public function outXLS(string $title, string $type = 'Excel2007'): FileInterface
     {
         $this->spreadsheet->getActiveSheet()->setTitle($title);
-        $this->spreadsheet->setActiveSheetIndex(0);
+        if ($this->spreadsheet->getSheetCount() > 0) {
+            try {
+                $this->spreadsheet->setActiveSheetIndex(0);
+            } catch (Exception) {
+                // due to the sheetCount > 0 this exception is never thrown.
+            }
+        }
 
         $file = match (strtolower($type)) {
             'csv'   => new CSV(),
