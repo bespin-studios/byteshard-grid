@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/byteshard/grid/compare/v1.0.1...v1.1.0) (2023-11-23)
+
+
+### Features
+
+* add the ability to pass DateTime objects in the data binding ([62c9848](https://github.com/byteshard/grid/commit/62c98486fe361de43a04bc4cc10ffa6146f2530b))
+
 ## [1.0.1](https://github.com/byteshard/grid/compare/v1.0.0...v1.0.1) (2023-10-09)
 
 
