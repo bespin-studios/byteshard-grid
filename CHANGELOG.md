@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/byteshard/grid/compare/v1.1.0...v1.2.0) (2024-02-14)
+
+
+### Features
+
+* add new Action AddRow ([ce81378](https://github.com/byteshard/grid/commit/ce8137829997cef9af2295ee6b4ea26e677e189a))
+
 # [1.1.0](https://github.com/byteshard/grid/compare/v1.0.1...v1.1.0) (2023-11-23)
 
 
