@@ -97,8 +97,9 @@ abstract class Grid extends CellContent implements GridInterface
     private array            $columnDefinition = [];
     private SimpleXMLElement $outputXml;
 
-    private array  $columnData        = [];
-    private string $rowSelectorColumn = '';
+    private array  $columnData         = [];
+    private string $rowSelectorColumn  = '';
+    private bool   $cellContentDefined = false;
 
 
     public function newRunClientGridUpdate(ClientDataInterface $clientData): array
@@ -190,6 +191,56 @@ abstract class Grid extends CellContent implements GridInterface
         $this->cell->setRequestTimestamp();
     }
 
+    protected function defineDataBinding(): array
+    {
+        return [];
+    }
+
+    private function processNodeDefinitions(): void
+    {
+        $this->processCellContentDefinitions();
+        foreach ($this->nodes as $node) {
+            $node->setParentAccessType($this->getAccessType());
+        }
+    }
+
+    private function processCellContentDefinitions(): void
+    {
+        if ($this->cellContentDefined === false) {
+            $this->defineCellContent();
+            $this->cellContentDefined = true;
+        }
+    }
+
+    public function getRows(array $data): array
+    {
+        $this->processCellContentDefinitions();
+        $this->setData($data);
+        $nonce = $this->cell->getNonce();
+        // create column proxy
+        $this->createColumnProxies($nonce);
+
+        // create node proxy
+        // TODO: create node proxy, create getters for all necessary properties and access them here
+        // create publicly accessible properties in node proxy and only use the node proxy from here on
+        $this->processNodeDefinitions();
+
+        if (!empty($this->nodes) && count($this->columns) > 0) {
+            if ($this->sort === true) {
+                $this->sortArray();
+            }
+            if (!empty($this->inputArray)) {
+                if ($this->visibleLevels === 1) {
+                    $this->buildFlatGrid($nonce);
+                } elseif ($this->visibleLevels > 1) {
+                    $this->determineEditLevel();
+                    $this->buildTreeGrid($nonce);
+                }
+            }
+        }
+        return $this->outputArray;
+    }
+
     /**
      * @session write (setRequestTimestamp, storeCellEvents, Cell::setContentControlType)
      * @session read (Session::getDBTimeZone, Session::getClientTimeZone, Session::getDateTimeFormat)
@@ -202,7 +253,11 @@ abstract class Grid extends CellContent implements GridInterface
     {
         $parentContent = parent::getCellContent($content);
         $this->setRequestTimestamp();
-        $this->defineCellContent();
+        $this->processCellContentDefinitions();
+        $data = $this->defineDataBinding();
+        if (!empty($data)) {
+            $this->setData($data);
+        }
         $nonce = $this->cell->getNonce();
         // create column proxy
         $this->createColumnProxies($nonce);
@@ -211,9 +266,7 @@ abstract class Grid extends CellContent implements GridInterface
         // create node proxy
         //TODO: create node proxy, create getters for all necessary properties and access them here
         // create publicly accessible properties in node proxy and only use the node proxy from here on
-        foreach ($this->nodes as $node) {
-            $node->setParentAccessType($this->getAccessType());
-        }
+        $this->processNodeDefinitions();
 
         if (!empty($this->nodes) && count($this->columns) > 0) {
             session_write_close();
@@ -657,7 +710,7 @@ abstract class Grid extends CellContent implements GridInterface
 
                 // set content values
                 foreach ($this->columnProxies as $columnProxy) {
-                    $this->outputArray[$rowId][$columnProxy->encryptedName] = $columnProxy->getValue($val, $this->outputArray[$rowId]['row']['attr']['id'], $rowType, $localeCache, $this->outputArray[$rowId]['row']['accessType']);
+                    $this->outputArray[$rowId]['columns'][$columnProxy->encryptedName] = $columnProxy->getValue($val, $this->outputArray[$rowId]['row']['attr']['id'], $rowType, $localeCache, $this->outputArray[$rowId]['row']['accessType']);
                 }
             }
         }
@@ -715,7 +768,7 @@ abstract class Grid extends CellContent implements GridInterface
 
                             // set content values
                             foreach ($this->columnProxies as $columnProxy) {
-                                $this->outputArray[$rowId][$columnProxy->encryptedName] = $columnProxy->getValue($val, $this->outputArray[$rowId]['row']['attr']['id'], $node['field'], $localeCache, $this->outputArray[$rowId]['row']['accessType']);
+                                $this->outputArray[$rowId]['columns'][$columnProxy->encryptedName] = $columnProxy->getValue($val, $this->outputArray[$rowId]['row']['attr']['id'], $node['field'], $localeCache, $this->outputArray[$rowId]['row']['accessType']);
                             }
                             $previousId[$nodeIndex] = $val->{$node['id']};
                         }
@@ -942,10 +995,10 @@ abstract class Grid extends CellContent implements GridInterface
 
             foreach ($this->columnDefinition as $columnId => $column) {
                 // loop over each cell
-                $cell = SimpleXML::addChild($row, 'cell', $rowData[$columnId]['value']);
+                $cell = SimpleXML::addChild($row, 'cell', $rowData['columns'][$columnId]['value']);
 
                 if ($cell !== null) {
-                    foreach ($rowData[$columnId]['attributes'] as $name => $value) {
+                    foreach ($rowData['columns'][$columnId]['attributes'] as $name => $value) {
                         SimpleXML::addAttribute($cell, $name, $value);
                     }
                 }

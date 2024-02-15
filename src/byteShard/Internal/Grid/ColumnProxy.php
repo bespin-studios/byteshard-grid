@@ -345,12 +345,12 @@ class ColumnProxy
         return $sign === '-' ? -$total : $total;
     }
 
-    private function getDate(string|DateTime $value): string
+    private function getDate(string|DateTime|null $value): string
     {
         if ($value instanceof DateTime) {
             return $value->setTimezone($this->clientTimezone)->format($this->clientFormat);
         }
-        if ($value !== '') {
+        if ($value !== '' && $value !== null) {
             $date = DateTime::createFromFormat($this->dbFormat, $value, $this->dbTimezone);
             if ($date === false) {
                 throw new Exception(__METHOD__.': could not create DateTime::createFromFormat. Use column->setServerDateFormat() or App\Settings::getDateFormat($objectType). Value: '.$value.' - Format: '.$this->dbFormat.' - Column: '.$this->id);
