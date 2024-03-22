@@ -6,13 +6,17 @@
 
 namespace byteShard;
 
+use byteShard\Cell\Event\OnPoll;
 use byteShard\Enum\AccessType;
+use byteShard\Event\OnPollInterface;
+use byteShard\Event\OnSelectInterface;
 use byteShard\Grid\Column\RowSelector;
 use byteShard\Grid\Event\OnDrop;
 use byteShard\Grid\GridInterface;
 use byteShard\Grid\Node;
 use byteShard\ID\RowID;
 use byteShard\Internal\CellContent;
+use byteShard\Internal\Event\ImplicitEventInterface;
 use byteShard\Internal\Export\Handler;
 use byteShard\Internal\Export\HandlerInterface;
 use byteShard\Internal\ExportHandler;
@@ -495,6 +499,7 @@ abstract class Grid extends CellContent implements GridInterface
             $this->cell->registerContentEvent($event);
         }
         $cellEvents = $this->getParentEventsForClient();
+        $cellEvents = $this->addImplicitEvents($cellEvents);
         if ($this->eventOnCellEdit === true) {
             $cellEvents['onEditCell'][] = 'doOnCellEdit';
         }
@@ -505,6 +510,33 @@ abstract class Grid extends CellContent implements GridInterface
             $cellEvents['onLinkClick'][] = 'doOnLinkClick';
         }
         return $cellEvents;
+    }
+
+    private function addImplicitEvents(array $events): array
+    {
+        $interfaces = array_flip(class_implements($this));
+        // remove events which have already been declared explicitly
+        foreach ($this->getEvents() as $event) {
+            if ($event instanceof ImplicitEventInterface) {
+                $interface = $event->getImplicitInterfaceClass();
+                if (array_key_exists($interface, $interfaces)) {
+                    unset($interfaces[$interface]);
+                }
+            }
+        }
+        foreach ($interfaces as $interface) {
+            switch ($interface) {
+                case OnPollInterface::class:
+                    $onPoll = new OnPoll();
+                    $events = array_merge_recursive($events, $onPoll->getClientArray($this->cell->getNonce()));
+                    break;
+                case OnSelectInterface::class:
+                    $onSelect = new Grid\Event\OnSelect();
+                    $events = array_merge_recursive($events, $onSelect->getClientArray($this->cell->getNonce()));
+                    break;
+            }
+        }
+        return $events;
     }
 
     private function getSettings(): array
