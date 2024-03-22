@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/byteshard/grid/compare/v1.2.0...v1.3.0) (2024-03-22)
+
+
+### Features
+
+* implicit events for polling and onSelect if the respective interfaces have been added to the grid ([809cf4b](https://github.com/byteshard/grid/commit/809cf4bce5bdd8cbf2ff7f9a83dca1ed287f8981))
+
 # [1.2.0](https://github.com/byteshard/grid/compare/v1.1.0...v1.2.0) (2024-02-14)
 
 
