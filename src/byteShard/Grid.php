@@ -14,6 +14,7 @@ use byteShard\Grid\Column\RowSelector;
 use byteShard\Grid\Event\OnDrop;
 use byteShard\Grid\GridInterface;
 use byteShard\Grid\Node;
+use byteShard\Grid\Style;
 use byteShard\ID\RowID;
 use byteShard\Internal\CellContent;
 use byteShard\Internal\Event\ImplicitEventInterface;
@@ -104,6 +105,10 @@ abstract class Grid extends CellContent implements GridInterface
     private array  $columnData         = [];
     private string $rowSelectorColumn  = '';
     private bool   $cellContentDefined = false;
+    /**
+     * @var Style[]
+     */
+    private array $styles = [];
 
 
     public function newRunClientGridUpdate(ClientDataInterface $clientData): array
@@ -695,6 +700,29 @@ abstract class Grid extends CellContent implements GridInterface
         }
     }
 
+    public function setStyles(Style ...$styles): void
+    {
+        $this->styles = $styles;
+    }
+
+    /**
+     * @param array<int, string> $rowIdPart
+     * @return array<string, string>
+     */
+    private function getRowStyles(array $rowIdPart): array
+    {
+        $rowStyles = [];
+        foreach ($this->styles as $style) {
+            $rowIdArray = [];
+            foreach ($rowIdPart as $rowIdIndex) {
+                $rowIdArray[$rowIdIndex] = $style->getIdValue($rowIdIndex);
+            }
+            $rowIdObject                                = new RowID($rowIdArray);
+            $rowStyles[$rowIdObject->getEncodedRowId()] = $style->getStyle();
+        }
+        return $rowStyles;
+    }
+
     /**
      * @session none
      */
@@ -713,6 +741,7 @@ abstract class Grid extends CellContent implements GridInterface
                     $rowIdPart[] = $node->getIdField();
                 }
             }
+            $rowStyles   = $this->getRowStyles($rowIdPart);
             $localeCache = [];
             foreach ($this->inputArray as $key => $val) {
                 // safe memory, unset rows as they're processed
@@ -736,7 +765,9 @@ abstract class Grid extends CellContent implements GridInterface
                     ],
                     'usr'        => []
                 ];
-                if (isset($val->Style) && !empty($val->Style)) {
+                if (isset($rowStyles[$rowId])) {
+                    $this->outputArray[$rowId]['row']['attr']['style'] = $rowStyles[$rowId];
+                } else if (!empty($val->Style)) {
                     $this->outputArray[$rowId]['row']['attr']['style'] = $val->Style;
                 }
 
@@ -768,6 +799,7 @@ abstract class Grid extends CellContent implements GridInterface
                 ];
             }
             $localeCache = [];
+            //TODO: rowStyles
             foreach ($this->inputArray as $key => $val) {
                 unset($this->inputArray[$key]);
                 $cryptoRowId  = [];
