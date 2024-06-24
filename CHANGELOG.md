@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/byteshard/grid/compare/v1.3.0...v1.4.0) (2024-06-24)
+
+
+### Features
+
+* add Style object for row styles ([1eb68d4](https://github.com/byteshard/grid/commit/1eb68d48a71c32439ad452dffd4ffa6af9918ba2))
+
 # [1.3.0](https://github.com/byteshard/grid/compare/v1.2.0...v1.3.0) (2024-03-22)
 
 
