@@ -1,3 +1,15 @@
+# [1.5.0](https://github.com/byteshard/grid/compare/v1.4.1...v1.5.0) (2024-06-28)
+
+
+### Bug Fixes
+
+* add nullable type to column::width ([da9c0c6](https://github.com/byteshard/grid/commit/da9c0c6affb7172ed2260697e11971f44644c245))
+
+
+### Features
+
+* add callback to grid columns for value transformation ([d24bf3f](https://github.com/byteshard/grid/commit/d24bf3f0c4101d1aee78480cb9fdb2c048237c9b))
+
 ## [1.4.1](https://github.com/byteshard/grid/compare/v1.4.0...v1.4.1) (2024-06-28)
 
 
