@@ -7,6 +7,7 @@
 namespace byteShard\Grid\Column;
 
 use byteShard\Enum;
+use byteShard\Enum\Access;
 use byteShard\Grid;
 use byteShard\Internal\Grid\CalColumn;
 
@@ -34,14 +35,14 @@ class Date extends CalColumn
 
     /**
      * Date constructor.
-     * @param string $id
-     * @param ?string $label
-     * @param null $width
-     * @param int $accessType
-     * @param string $displayDateFormat
+     * @param string      $id
+     * @param ?string     $label
+     * @param int|null    $width
+     * @param int|Access  $accessType
+     * @param string      $displayDateFormat
      * @param string|null $dataBinding
      */
-    public function __construct(string $id, ?string $label = null, $width = null, int $accessType = Enum\AccessType::R, string $displayDateFormat = '', ?string $dataBinding = null)
+    public function __construct(string $id, ?string $label = null, ?int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, string $displayDateFormat = '', ?string $dataBinding = null)
     {
         parent::__construct(id: $id, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
         if ($displayDateFormat !== '') {

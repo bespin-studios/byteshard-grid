@@ -8,6 +8,7 @@ namespace byteShard\Grid\Column;
 
 use byteShard\Cell;
 use byteShard\Enum;
+use byteShard\Enum\Access;
 use byteShard\Grid;
 use byteShard\Internal\ClientData\EncryptedObjectValueInterface;
 use byteShard\Internal\Grid\Column;
@@ -36,13 +37,13 @@ class Image extends Column implements EncryptedObjectValueInterface
 
     /**
      * Image constructor.
-     * @param string $id
+     * @param string      $id
      * @param string|null $label
-     * @param int|null $width
-     * @param int $accessType
+     * @param int|null    $width
+     * @param int|Access  $accessType
      * @param string|null $dataBinding
      */
-    public function __construct(string $id, ?string $label = null, ?int $width = null, int $accessType = Enum\AccessType::R, ?string $dataBinding = null)
+    public function __construct(string $id, ?string $label = null, ?int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)
     {
         parent::__construct(id: $id, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
     }

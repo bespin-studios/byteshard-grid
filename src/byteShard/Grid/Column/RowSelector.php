@@ -27,7 +27,7 @@ class RowSelector extends Column
     private bool                 $comply_to_access_type = false;
     private bool                 $readonlyHidden        = false;
 
-    public function __construct(string $id = null, string $label = null, int $width = null, ?string $dataBinding = null)
+    public function __construct(?string $id = null, ?string $label = null, ?int $width = null, ?string $dataBinding = null)
     {
         $id    = 'rowSelector';
         $label = '#master_checkbox';
