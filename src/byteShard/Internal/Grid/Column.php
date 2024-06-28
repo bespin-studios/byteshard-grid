@@ -52,7 +52,7 @@ abstract class Column
 
     protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
     /** @var Event[] */
-    private array $events = [];
+    private array  $events          = [];
     private string $localeBaseToken = '';
     private string $className       = '';
     private string $dataBinding;
@@ -60,13 +60,13 @@ abstract class Column
 
     /**
      * Column constructor.
-     * @param string $id
+     * @param string      $id
      * @param null|string $label
-     * @param null|int $width
-     * @param int|Access $accessType
+     * @param null|int    $width
+     * @param int|Access  $accessType
      * @param null|string $dataBinding if dataBinding is null, it will be mapped to the id
      */
-    public function __construct(string $id, ?string $label = null, int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)
+    public function __construct(string $id, ?string $label = null, ?int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)
     {
         $this->id            = $id;
         $this->encryptedName = Session::encrypt($id);

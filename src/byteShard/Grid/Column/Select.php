@@ -29,7 +29,7 @@ class Select extends Column implements IDReference
     protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
     public array                 $idReferences   = [];
 
-    public function __construct($id, $label, array|\byteShard\Combo $options = [], int $width = null, int|Enum\Access $accessType = 1, ?string $dataBinding = null)
+    public function __construct(string $id, ?string $label = null, array|\byteShard\Combo $options = [], ?int $width = null, int|Enum\Access $accessType = 1, ?string $dataBinding = null)
     {
         parent::__construct(id: $id, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
         if ($options instanceof \byteShard\Combo) {

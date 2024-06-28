@@ -7,6 +7,7 @@
 namespace byteShard\Grid\Column;
 
 use byteShard\Enum;
+use byteShard\Enum\Access;
 use byteShard\Grid;
 use byteShard\Internal\Grid\CalColumn;
 
@@ -27,14 +28,14 @@ class DateDifference extends CalColumn
 
     /**
      * DateDifference constructor.
-     * @param string $dbField1
-     * @param string $dbField2
+     * @param string      $dbField1
+     * @param string      $dbField2
      * @param string|null $label
-     * @param int|null $width
-     * @param int $accessType
+     * @param int|null    $width
+     * @param int|Access  $accessType
      * @param string|null $dataBinding
      */
-    public function __construct(string $dbField1, string $dbField2, string $label = null, int $width = null, int $accessType = Enum\AccessType::R, ?string $dataBinding = null)
+    public function __construct(string $dbField1, string $dbField2, ?string $label = null, ?int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)
     {
         parent::__construct(id: $dbField1, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
         $this->dateDifferenceColumn = true;

@@ -28,7 +28,7 @@ class Text extends Column
     /**
      * Text constructor.
      */
-    public function __construct(string $id, string $label = null, int $width = null, $accessType = Enum\AccessType::R, ?string $dataBinding = null)
+    public function __construct(string $id, ?string $label = null, ?int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)
     {
         parent::__construct(id: $id, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
     }
