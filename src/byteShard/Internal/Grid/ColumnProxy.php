@@ -22,15 +22,15 @@ use DateTimeZone;
 
 class ColumnProxy
 {
-    private const dateDifference = 'dateDifference';
-    private const valueCallback  = 'valueCallback';
-    private const link           = 'link';
-    private const linkMap        = 'linkMap';
-    private const image          = 'image';
-    private const idReference    = 'idReference';
+    private const dateDifference = 1;
+    private const valueCallback  = 2;
+    private const link           = 3;
+    private const linkMap        = 4;
+    private const image          = 5;
+    private const idReference    = 6;
 
     public string        $encryptedName;
-    private string       $specialType                           = '';
+    private int          $specialType                           = 0;
     private bool         $convertDate                           = false;
     private array        $idReferences                          = [];
     private array        $imageMap                              = [];
