@@ -67,7 +67,7 @@ abstract class Column
      * @param int|Access $accessType
      * @param null|string $dataBinding if dataBinding is null, it will be mapped to the id
      */
-    public function __construct(string $id, ?string $label = null, int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)
+    public function __construct(string $id, ?string $label = null, ?int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)
     {
         $this->id            = $id;
         $this->encryptedName = Session::encrypt($id);
