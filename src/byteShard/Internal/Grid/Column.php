@@ -14,8 +14,8 @@ use byteShard\Internal\Event\Event;
 use byteShard\Internal\Validation\Validation;
 use byteShard\Locale;
 use byteShard\Internal\Permission\PermissionImplementation;
-use byteShard\Exception;
 use byteShard\Session;
+use Closure;
 
 /**
  * Class Column
@@ -31,7 +31,7 @@ abstract class Column
     public bool   $htmlLink               = false;
     public bool   $dateDifferenceColumn   = false;
     public bool   $readOnlyKeyValueColumn = false;
-    public bool   $getLocale              = false;
+    private bool  $valueIsLocaleToken     = false;
     public string $dateField1             = '';
     public string $dateField2             = '';
 
@@ -52,18 +52,19 @@ abstract class Column
 
     protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
     /** @var Event[] */
-    private array  $events          = [];
-    private string $localeBaseToken = '';
-    private string $className       = '';
-    private string $dataBinding;
-    private string $id;
+    private array   $events          = [];
+    private string  $localeBaseToken = '';
+    private string  $className       = '';
+    private string  $dataBinding;
+    private string  $id;
+    private Closure $valueCallback;
 
     /**
      * Column constructor.
-     * @param string      $id
+     * @param string $id
      * @param null|string $label
-     * @param null|int    $width
-     * @param int|Access  $accessType
+     * @param null|int $width
+     * @param int|Access $accessType
      * @param null|string $dataBinding if dataBinding is null, it will be mapped to the id
      */
     public function __construct(string $id, ?string $label = null, ?int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)
@@ -76,6 +77,28 @@ abstract class Column
         }
         $this->dataBinding = $dataBinding ?? $id;
         $this->setAccessType($accessType);
+    }
+
+    public function translateValueLocaleToken(): self
+    {
+        $this->valueIsLocaleToken = true;
+        return $this;
+    }
+
+    public function valueIsLocaleToken(): bool
+    {
+        return $this->valueIsLocaleToken;
+    }
+
+    public function setValueCallback(Closure $callback): self
+    {
+        $this->valueCallback = $callback;
+        return $this;
+    }
+
+    public function getValueCallback(): ?Closure
+    {
+        return $this->valueCallback ?? null;
     }
 
     public function getId(): string

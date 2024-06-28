@@ -16,6 +16,7 @@ use byteShard\Grid\Column\Tree;
 use byteShard\Grid\Enum\Type;
 use byteShard\Locale;
 use byteShard\Utils\Strings;
+use Closure;
 use DateTime;
 use DateTimeZone;
 
@@ -49,6 +50,7 @@ class ColumnProxy
     private array        $linkMap                               = [];
     private string       $dataBinding;
     private string       $id;
+    private Closure      $valueCallback;
 
     // grid-wide settings
     private bool $wrapGridContents;
@@ -63,10 +65,16 @@ class ColumnProxy
         $this->wrapText         = $column->multiline;
         $this->dateField1       = $column->dateField1 ?? '';
         $this->dateField2       = $column->dateField2 ?? '';
-        $this->isLocaleToken    = $column->getLocale;
+        $this->isLocaleToken    = $column->valueIsLocaleToken();
         $this->wrapGridContents = $wrapGridContents;
         $this->className        = $column->getClassName();
         $this->cellId           = $cell->getNewId()?->getEncryptedCellIdForEvent() ?? '';
+
+        $valueCallback = $column->getValueCallback();
+        if ($valueCallback !== null) {
+            $this->specialType   = 'valueCallback';
+            $this->valueCallback = $valueCallback;
+        }
 
         if ($column instanceof CalColumn) {
             $this->convertDate = true;
@@ -199,6 +207,9 @@ class ColumnProxy
                         $value = $map['value'].'^'.$map['tooltip'].'^'.$map['url'].'^'.$map['target'];
                     }
                 }
+                break;
+            case 'valueCallback':
+                $value = ($this->valueCallback)($data->{$this->dataBinding});
                 break;
             default:
                 if ($this->columnType === RowSelector::class) {
