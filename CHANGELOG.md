@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/byteshard/grid/compare/v1.4.0...v1.4.1) (2024-06-28)
+
+
+### Bug Fixes
+
+* run semrel only on main ([b6197c1](https://github.com/byteshard/grid/commit/b6197c114bdeb3bd6621c426018d65598712661a))
+
 # [1.4.0](https://github.com/byteshard/grid/compare/v1.3.0...v1.4.0) (2024-06-24)
 
 
