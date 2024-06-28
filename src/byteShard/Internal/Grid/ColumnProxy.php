@@ -22,6 +22,13 @@ use DateTimeZone;
 
 class ColumnProxy
 {
+    private const dateDifference = 'dateDifference';
+    private const valueCallback  = 'valueCallback';
+    private const link           = 'link';
+    private const linkMap        = 'linkMap';
+    private const image          = 'image';
+    private const idReference    = 'idReference';
+
     public string        $encryptedName;
     private string       $specialType                           = '';
     private bool         $convertDate                           = false;
@@ -72,7 +79,7 @@ class ColumnProxy
 
         $valueCallback = $column->getValueCallback();
         if ($valueCallback !== null) {
-            $this->specialType   = 'valueCallback';
+            $this->specialType   = self::valueCallback;
             $this->valueCallback = $valueCallback;
         }
 
@@ -87,15 +94,15 @@ class ColumnProxy
 
         // the order of setting specialType is important
         if ($column->dateDifferenceColumn === true) {
-            $this->specialType = 'dateDifference';
+            $this->specialType = self::dateDifference;
         }
         if ($column instanceof IDReference && $column->getAccessType() === AccessType::R) {
-            $this->specialType  = 'idReference';
+            $this->specialType  = self::idReference;
             $this->idReferences = $column->getIDReferences();
         }
 
         if ($column instanceof Image) {
-            $this->specialType = 'image';
+            $this->specialType = self::image;
             $this->imageMap    = $column->getImageMap($cell);
             foreach ($this->imageMap as $map) {
                 if ($map['jsLink'] === true) {
@@ -106,7 +113,7 @@ class ColumnProxy
         if ($column instanceof Link) {
             $this->linkMap = $column->getLinkMaps();
             if (empty($this->linkMap)) {
-                $this->specialType = 'link';
+                $this->specialType = self::link;
                 // either link maps or unmapped properties, not both at once
                 if (!empty($column->getEvents())) {
                     $this->javascriptLink = true;
@@ -115,7 +122,7 @@ class ColumnProxy
                 }
                 $this->tooltip = $column->getTooltip();
             } else {
-                $this->specialType = 'linkMap';
+                $this->specialType = self::linkMap;
             }
         }
 
@@ -156,6 +163,9 @@ class ColumnProxy
         return $this->columnDefinition;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getValue(object $data, string $rowId, string $rowType, array &$localeCache, int $accessType): array
     {
         if ($this->treeColumn) {
@@ -163,7 +173,7 @@ class ColumnProxy
         }
         $value = '';
         switch ($this->specialType) {
-            case 'dateDifference':
+            case self::dateDifference:
                 if (isset($data->{$this->dateField1}, $data->{$this->dateField2}) && !empty($data->{$this->dateField1}) && !empty($data->{$this->dateField2})) {
                     $value = $this->getDateDifference(
                         new DateTime($data->{$this->dateField1}, $this->dbTimezone),
@@ -171,10 +181,10 @@ class ColumnProxy
                     );
                 }
                 break;
-            case 'idReference':
+            case self::idReference:
                 $value = $this->idReferences[$data->{$this->dataBinding}] ?? '';
                 break;
-            case 'image':
+            case self::image:
                 if (isset($data->{$this->dataBinding}, $this->imageMap[$data->{$this->dataBinding}])) {
                     $value          = $this->imageMap[$data->{$this->dataBinding}]['value'];
                     $encryptedValue = $this->imageMap[$data->{$this->dataBinding}]['encryptedValue'] ?? '';
@@ -183,7 +193,7 @@ class ColumnProxy
                     }
                 }
                 break;
-            case 'link':
+            case self::link:
                 $value = $data->{$this->dataBinding} ?? '';
                 if ($this->convertDate === true) {
                     $value = $this->getDate($value);
@@ -198,7 +208,7 @@ class ColumnProxy
                     $value = $value.'^'.$this->tooltip.'^'.$this->url;
                 }
                 break;
-            case 'linkMap':
+            case self::linkMap:
                 if (isset($data->{$this->dataBinding}, $this->linkMap[$data->{$this->dataBinding}])) {
                     $map = $this->linkMap[$data->{$this->dataBinding}];
                     if ($map['js'] === true) {
@@ -208,7 +218,7 @@ class ColumnProxy
                     }
                 }
                 break;
-            case 'valueCallback':
+            case self::valueCallback:
                 $value = ($this->valueCallback)($data->{$this->dataBinding});
                 break;
             default:
@@ -356,6 +366,9 @@ class ColumnProxy
         return $sign === '-' ? -$total : $total;
     }
 
+    /**
+     * @throws Exception
+     */
     private function getDate(string|DateTime|null $value): string
     {
         if ($value instanceof DateTime) {
