@@ -1,3 +1,13 @@
+# [2.0.0](https://github.com/byteshard/grid/compare/v1.5.0...v2.0.0) (2024-07-08)
+
+
+* Merge pull request #11 from byteshard/lhennig_coreupgrade ([b351b44](https://github.com/byteshard/grid/commit/b351b444e4029ecefde819612330b9f595f14bfc)), closes [#11](https://github.com/byteshard/grid/issues/11)
+
+
+### BREAKING CHANGES
+
+* upgrade core to breaking change version (only ext-mb…
+
 # [1.5.0](https://github.com/byteshard/grid/compare/v1.4.1...v1.5.0) (2024-06-28)
 
 
