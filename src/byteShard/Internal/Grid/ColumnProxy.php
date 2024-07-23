@@ -9,6 +9,7 @@ namespace byteShard\Internal\Grid;
 use byteShard\Cell;
 use byteShard\Enum\AccessType;
 use byteShard\Exception;
+use byteShard\Grid\Column\Currency;
 use byteShard\Grid\Column\Image;
 use byteShard\Grid\Column\Link;
 use byteShard\Grid\Column\RowSelector;
@@ -234,6 +235,8 @@ class ColumnProxy
                         $value = $this->getDate($value);
                     } elseif ($value instanceof DateTime) {
                         $value = $value->format($this->clientFormat);
+                    } elseif ($this->columnType === Currency::class) {
+                        $value = Strings::purify(number_format($value, 2, '.', ''));
                     } else {
                         $value = Strings::purify($value);
                     }
