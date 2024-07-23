@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/byteshard/grid/compare/v2.0.0...v2.0.1) (2024-07-23)
+
+
+### Bug Fixes
+
+* incorrect format on currency columns. ([08c1375](https://github.com/byteshard/grid/commit/08c137585a28af20b38bfca627853d543f8d5ad9))
+
 # [2.0.0](https://github.com/byteshard/grid/compare/v1.5.0...v2.0.0) (2024-07-08)
 
 
