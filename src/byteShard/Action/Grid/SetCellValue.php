@@ -31,17 +31,27 @@ class SetCellValue extends Action
      */
     public function setNewValue(array $rowId, Column $column, string $newValue): void
     {
-        $rowIdObject = new RowID($rowId);
-
-        $this->newValues[$rowIdObject->getEncodedRowId()] = [
-            'row' => $rowIdObject,
-            'col' => [
-                $column->getId() => [
+        $rowIdObject  = new RowID($rowId);
+        $encodedRowId = $rowIdObject->getEncodedRowId();
+        $columnId     = $column->getId();
+        if (array_key_exists($encodedRowId, $this->newValues)) {
+            if (!array_key_exists($columnId, $this->newValues[$encodedRowId]['col'])) {
+                $this->newValues[$encodedRowId]['col'][$columnId] = [
                     'column'   => $column,
                     'newValue' => $newValue
+                ];
+            }
+        } else {
+            $this->newValues[$encodedRowId] = [
+                'row' => $rowIdObject,
+                'col' => [
+                    $column->getId() => [
+                        'column'   => $column,
+                        'newValue' => $newValue
+                    ]
                 ]
-            ]
-        ];
+            ];
+        }
     }
 
     protected function runAction(): ActionResultInterface
