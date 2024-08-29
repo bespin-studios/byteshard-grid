@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/byteshard/grid/compare/v2.0.1...v2.1.0) (2024-08-29)
+
+
+### Features
+
+* allow update of multiple columns of a single row ([54c4948](https://github.com/byteshard/grid/commit/54c494857700acebbded1f1814227cbc410899d2))
+
 ## [2.0.1](https://github.com/byteshard/grid/compare/v2.0.0...v2.0.1) (2024-07-23)
 
 
