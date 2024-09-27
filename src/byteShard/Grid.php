@@ -31,6 +31,7 @@ use byteShard\Internal\Struct\ValidationFailed;
 use byteShard\Popup\Message;
 use DateTime;
 use SimpleXMLElement;
+use byteShard\Internal\Deeplink\Deeplink;
 
 
 //README: special columns in data:
@@ -546,7 +547,7 @@ abstract class Grid extends CellContent implements GridInterface
 
     private function getSettings(): array
     {
-        $cookieName = get_class($this).'_'.$this->viewVersion.'_'.$this->numberOfColumns;
+        $cookieName = $this->getCookieName();
         $settings   = [
             'gridStatsInCellHeader' => $this->gridStatsInCellHeader,
             'editLvl'               => $this->editLevel,
@@ -572,7 +573,28 @@ abstract class Grid extends CellContent implements GridInterface
         $methods['setDragBehavior']   = $this->eventOnDrop ? 'sibling' : null;
         // TODO: check access type of tree column and cell
         $methods['enableTreeCellEdit'] = $this->treeCellEdit;
+        $cookie                        = Deeplink::getCookie();
+        if ($cookie !== null && isset($cookie['cell'], $cookie['filter'])) {
+            if ($cookie['cell'] === $this->cell->getLayoutCellId()) {
+                $filter = [];
+                foreach ($this->columns as $column) {
+                    $filter[$column->encryptedName] = $cookie['filter'][$column->getId()] ?? '';
+                }
+                if (!empty($filter)) {
+                    $methods['setColFilter'] = [
+                        'cookieName' => $this->getCookieName(),
+                        'filters'    => $filter,
+                    ];
+                }
+                Deeplink::cleanupCookie();
+            }
+        }
         return array_filter($methods);
+    }
+
+    protected function getCookieName(): string
+    {
+        return get_class($this).'_'.$this->viewVersion.'_'.$this->numberOfColumns;
     }
 
     private function getJSMethodsAfterLoading(): array
@@ -590,7 +612,7 @@ abstract class Grid extends CellContent implements GridInterface
         if ($this->columnMove) {
             $methods['enableColumnMove'] = true;
         }
-        $cookieName           = get_class($this).'_'.$this->viewVersion.'_'.$this->numberOfColumns;
+        $cookieName           = $this->getCookieName();
         $cookieExpirationDate = 'expires='.(new DateTime('now'))->modify('+10 years')->format('D, d M Y').' 23:00:00 GMT';
         $cookieParameters     = $cookieExpirationDate.';SameSite=Lax';
         if ($this->cookieOrderSaving) {
@@ -767,7 +789,7 @@ abstract class Grid extends CellContent implements GridInterface
                 ];
                 if (isset($rowStyles[$rowId])) {
                     $this->outputArray[$rowId]['row']['attr']['style'] = $rowStyles[$rowId];
-                } else if (!empty($val->Style)) {
+                } elseif (!empty($val->Style)) {
                     $this->outputArray[$rowId]['row']['attr']['style'] = $val->Style;
                 }
 
