@@ -1,3 +1,15 @@
+# [2.2.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.1.0...v2.2.0) (2024-09-27)
+
+
+### Features
+
+* add grid pre-filtered columns ([05ac076](https://github.com/bespin-studios/byteshard-grid/commit/05ac0765beed109a0c5031684277e85d404419b0))
+
+
+### Performance Improvements
+
+* update dependencies ([36e497f](https://github.com/bespin-studios/byteshard-grid/commit/36e497fb5322c8078fd1ec6a63160bf33d71c14f))
+
 # [2.1.0](https://github.com/byteshard/grid/compare/v2.0.1...v2.1.0) (2024-08-29)
 
 
