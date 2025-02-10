@@ -49,6 +49,7 @@ abstract class Column
     protected int    $collapse     = 0;
     public bool      $multiline    = true;
     protected bool   $colspan      = false;
+    private bool     $cdata        = false;
 
     protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
     /** @var Event[] */
@@ -61,10 +62,10 @@ abstract class Column
 
     /**
      * Column constructor.
-     * @param string $id
+     * @param string      $id
      * @param null|string $label
-     * @param null|int $width
-     * @param int|Access $accessType
+     * @param null|int    $width
+     * @param int|Access  $accessType
      * @param null|string $dataBinding if dataBinding is null, it will be mapped to the id
      */
     public function __construct(string $id, ?string $label = null, ?int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)
@@ -425,4 +426,15 @@ abstract class Column
         $this->encryptedName = Session::encrypt(json_encode($encrypted), $nonce);
         return $this->encryptedName;
     }
+
+    public function isCdata(): bool
+    {
+        return $this->cdata;
+    }
+
+    public function setCdata(bool $cdata): void
+    {
+        $this->cdata = $cdata;
+    }
+
 }

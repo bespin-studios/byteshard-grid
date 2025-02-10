@@ -382,7 +382,7 @@ abstract class Grid extends CellContent implements GridInterface
 
     /**
      * @param string $query
-     * @param array $parameters
+     * @param array  $parameters
      * @return $this
      * @API
      * @session none
@@ -396,7 +396,7 @@ abstract class Grid extends CellContent implements GridInterface
 
     /**
      * @param string $query
-     * @param array $parameters
+     * @param array  $parameters
      * @return $this
      * @API
      * @session none
@@ -457,7 +457,7 @@ abstract class Grid extends CellContent implements GridInterface
      * current usage: pass an array with the same number of elements as visible columns.
      * possible values are <name> or '#rspan'
      * @param array $values
-     * @param int $level
+     * @param int   $level
      * @return $this
      * @API
      * @session none
@@ -538,7 +538,7 @@ abstract class Grid extends CellContent implements GridInterface
                     break;
                 case OnSelectInterface::class:
                     $onSelect = new Grid\Event\OnSelect();
-                    $events = array_merge_recursive($events, $onSelect->getClientArray($this->cell->getNonce()));
+                    $events   = array_merge_recursive($events, $onSelect->getClientArray($this->cell->getNonce()));
                     break;
             }
         }
@@ -1028,7 +1028,6 @@ abstract class Grid extends CellContent implements GridInterface
             $data = SimpleXML::addChild($this->outputXml, 'userdata', $json);
             $data?->addAttribute('name', 'xlsExportWidth');
         }
-
         /*
          * //Globale userData direkt an Ergebnis-Objekt hängen if(isset($this->arParameters['userData']) && is_arrayWC($this->arParameters['userData'])){ foreach($this->arParameters['userData'] as $name=>$value){ $data=$this->outputXml->addChild("userdata",(is_bool($value))?($value ? 'true' : 'false'):$value); $data->addAttribute("name",$name); } }
          */
@@ -1056,7 +1055,7 @@ abstract class Grid extends CellContent implements GridInterface
     /**
      * appends a row to the grid content
      * @session none
-     * @param array $rowData content of the row to append
+     * @param array             $rowData content of the row to append
      * @param ?SimpleXMLElement $parentXMLObj parent object to append the row to
      */
     private function addContentRowXML(array $rowData, ?SimpleXMLElement $parentXMLObj): ?SimpleXMLElement
@@ -1081,7 +1080,11 @@ abstract class Grid extends CellContent implements GridInterface
 
             foreach ($this->columnDefinition as $columnId => $column) {
                 // loop over each cell
-                $cell = SimpleXML::addChild($row, 'cell', $rowData['columns'][$columnId]['value']);
+                if ($rowData['columns'][$columnId]['cdata'] === true) {
+                    $cell = SimpleXML::addChildCData($row, 'cell', $rowData['columns'][$columnId]['value']);
+                } else {
+                    $cell = SimpleXML::addChild($row, 'cell', $rowData['columns'][$columnId]['value']);
+                }
 
                 if ($cell !== null) {
                     foreach ($rowData['columns'][$columnId]['attributes'] as $name => $value) {

@@ -59,6 +59,7 @@ class ColumnProxy
     private string       $dataBinding;
     private string       $id;
     private Closure      $valueCallback;
+    private bool         $cdata;
 
     // grid-wide settings
     private bool $wrapGridContents;
@@ -74,6 +75,7 @@ class ColumnProxy
         $this->dateField1       = $column->dateField1 ?? '';
         $this->dateField2       = $column->dateField2 ?? '';
         $this->isLocaleToken    = $column->valueIsLocaleToken();
+        $this->cdata            = $column->isCdata();
         $this->wrapGridContents = $wrapGridContents;
         $this->className        = $column->getClassName();
         $this->cellId           = $cell->getNewId()?->getEncryptedCellIdForEvent() ?? '';
@@ -252,7 +254,8 @@ class ColumnProxy
         }
         $result = [
             'value'      => $value,
-            'attributes' => []
+            'attributes' => [],
+            'cdata'      => $this->cdata,
         ];
 
         $cssClasses = [];
