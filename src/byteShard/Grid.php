@@ -938,7 +938,7 @@ abstract class Grid extends CellContent implements GridInterface
         $filters = [];
         // add column definition to xml
         foreach ($this->columnDefinition as $column) {
-            $col = SimpleXML::addChild($header, 'column', $column['label']);
+            $col = SimpleXML::addChild($header, 'column', $column['label'], null, true);
             // add defined attributes to the column
             foreach ($column['attributes'] as $attributeName => $attributeValue) {
                 SimpleXML::addAttribute($col, $attributeName, $attributeValue);
@@ -954,9 +954,9 @@ abstract class Grid extends CellContent implements GridInterface
                 // Ohne Break da auch die combo Attribute zutreffen
                 /** @noinspection PhpMissingBreakStatementInspection */
                 case Grid\Enum\Type::COMBO_READONLY:
-                    SimpleXML::addAttribute($col, 'editable', 'false');
+                    SimpleXML::addAttribute($col, 'editable', 'false', null, true);
                 case Grid\Enum\Type::COMBO:
-                    SimpleXML::addAttribute($col, 'xmlcontent', '1');
+                    SimpleXML::addAttribute($col, 'xmlcontent', '1', null, true);
                     // @TODO: Alle Einträge anhängen
                     // Create a Combo XML and embed it in the GRID XML
                     if (isset($column['comboboxValues'])) {
@@ -975,8 +975,8 @@ abstract class Grid extends CellContent implements GridInterface
                     // Gültige Combobox Werte für Spalte setzen
                     if (isset($column['comboboxValues'])) {
                         foreach ($column['comboboxValues'] as $optionIdx => $optionName) {
-                            $option = SimpleXML::addChild($col, 'option', $optionName);
-                            SimpleXML::addAttribute($option, 'value', $optionIdx);
+                            $option = SimpleXML::addChild($col, 'option', $optionName, null, true);
+                            SimpleXML::addAttribute($option, 'value', $optionIdx, null, true);
                         }
                     }
                     break;
@@ -992,20 +992,20 @@ abstract class Grid extends CellContent implements GridInterface
             $filters[] = (isset($column['attributes']['filter'])) ? $column['attributes']['filter'] : '';
         }
         // ### beforeInit Abschnitt erstellen
-        $beforeInit = SimpleXML::addChild($header, 'beforeInit');
+        $beforeInit = SimpleXML::addChild($header, 'beforeInit', null, null, true);
         // Zusätzliche Header Zeilen
         if (count($this->multilineHeader) > 0) {
             foreach ($this->multilineHeader as $columns) {
-                $call = SimpleXML::addChild($beforeInit, 'call');
-                SimpleXML::addAttribute($call, 'command', 'attachHeader');
-                SimpleXML::addChild($call, 'param', implode(',', $columns));
+                $call = SimpleXML::addChild($beforeInit, 'call', null, null, true);
+                SimpleXML::addAttribute($call, 'command', 'attachHeader', null, true);
+                SimpleXML::addChild($call, 'param', implode(',', $columns), null, true);
             }
         }
         // Filter: Wenn Filter in mindestens einer Spalte konfiguriert ist, die attachHeader Funktion ausführen
         if (strlen(implode(',', $filters)) > count($filters)) {
-            $call = SimpleXML::addChild($beforeInit, 'call');
-            SimpleXML::addAttribute($call, 'command', 'attachHeader');
-            SimpleXML::addChild($call, 'param', implode(',', $filters));
+            $call = SimpleXML::addChild($beforeInit, 'call', null, null, true);
+            SimpleXML::addAttribute($call, 'command', 'attachHeader', null, true);
+            SimpleXML::addChild($call, 'param', implode(',', $filters), null, true);
         }
 
         // Sonstige Einstellungen
@@ -1025,7 +1025,7 @@ abstract class Grid extends CellContent implements GridInterface
         }
         $json = json_encode($xlsWidth);
         if ($json !== false) {
-            $data = SimpleXML::addChild($this->outputXml, 'userdata', $json);
+            $data = SimpleXML::addChild($this->outputXml, 'userdata', $json, null, true);
             $data?->addAttribute('name', 'xlsExportWidth');
         }
         /*
@@ -1075,7 +1075,7 @@ abstract class Grid extends CellContent implements GridInterface
             // past implementation: ['usr']['exportColor'] = 0
             foreach ($rowData['row']['usr'] as $name => $value) {
                 $userData = SimpleXML::addChild($row, 'userdata', $value);
-                SimpleXML::addAttribute($userData, 'name', $name);
+                SimpleXML::addAttribute($userData, 'name', $name, null, true);
             }
 
             foreach ($this->columnDefinition as $columnId => $column) {
@@ -1083,7 +1083,7 @@ abstract class Grid extends CellContent implements GridInterface
                 if ($rowData['columns'][$columnId]['cdata'] === true) {
                     $cell = SimpleXML::addChildCData($row, 'cell', $rowData['columns'][$columnId]['value']);
                 } else {
-                    $cell = SimpleXML::addChild($row, 'cell', $rowData['columns'][$columnId]['value']);
+                    $cell = SimpleXML::addChild($row, 'cell', $rowData['columns'][$columnId]['value'], null, true);
                 }
 
                 if ($cell !== null) {
