@@ -1,3 +1,11 @@
+# [2.3.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.2.0...v2.3.0) (2025-02-11)
+
+
+### Features
+
+* add cdata columns for the grid ([3778fc9](https://github.com/bespin-studios/byteshard-grid/commit/3778fc9d3aeffab839e934afe095f77a56c51c65))
+* add trusted parameter to SimpleXML so we don't escape static, trusted strings. ([e971d65](https://github.com/bespin-studios/byteshard-grid/commit/e971d65a7dacb9da912cf2379279b83e0d7e8820))
+
 # [2.2.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.1.0...v2.2.0) (2024-09-27)
 
 
