@@ -40,6 +40,7 @@ class Excel
     private array  $hidden_columns = [];
     private array  $coll_options   = [];
     private bool   $strip_tags     = false;
+    private bool   $strip_nbsp     = false;
 
     /* @var SimpleXMLElement */
     private SimpleXMLElement $xml;
@@ -279,6 +280,9 @@ class Excel
                     $cell['text'] = $this->coll_options[$k][trim((string)$column)] ?? trim((string)$column);
                     if ($this->strip_tags === true) {
                         $cell['text'] = strip_tags($cell['text']);
+                    }
+                    if ($this->strip_nbsp && bin2hex($cell['text']) === 'c2a0') {
+                        $cell['text'] = '';
                     }
                     $cell['bg']        = isset($column->attributes()->bgColor) ? (string)$column->attributes()->bgColor : $alternating_background_color;
                     $cell['textColor'] = isset($column->attributes()->textColor) ? (string)$column->attributes()->textColor : $this->text_color;
