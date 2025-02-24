@@ -1,3 +1,11 @@
+## [2.3.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.3.0...v2.3.1) (2025-02-24)
+
+
+### Bug Fixes
+
+* add possibility to strip nbsp; from excel export ([c5da552](https://github.com/bespin-studios/byteshard-grid/commit/c5da5525d6cb4eaf2f3fb81e12b899edd2792807))
+* add possibility to strip nbsp; from excel export ([923ed7b](https://github.com/bespin-studios/byteshard-grid/commit/923ed7b205c28ee9b2ed9e60c9a6adbe0b4b5a0b))
+
 # [2.3.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.2.0...v2.3.0) (2025-02-11)
 
 
