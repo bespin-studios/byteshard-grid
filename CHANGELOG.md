@@ -1,3 +1,10 @@
+## [2.3.2](https://github.com/bespin-studios/byteshard-grid/compare/v2.3.1...v2.3.2) (2025-05-13)
+
+
+### Bug Fixes
+
+* currency column had issues with decimals from sql ([0fb3148](https://github.com/bespin-studios/byteshard-grid/commit/0fb31480609ff2901afd4591d0eb72b94583ea2b))
+
 ## [2.3.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.3.0...v2.3.1) (2025-02-24)
 
 
