@@ -238,7 +238,7 @@ class ColumnProxy
                     } elseif ($value instanceof DateTime) {
                         $value = $value->format($this->clientFormat);
                     } elseif ($this->columnType === Currency::class) {
-                        $value = Strings::purify(number_format($value, 2, '.', ''));
+                        $value = number_format((float)$value, 2, '.', '');
                     } else {
                         $value = Strings::purify($value);
                     }
