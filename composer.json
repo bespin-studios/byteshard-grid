@@ -13,14 +13,14 @@
       "byteShard\\": "src/byteShard"
     }
   },
-  "require-dev": {
-    "phpstan/phpstan": "^1.9"
-  },
   "require": {
     "php": "^8.1",
     "byteshard/core": ">=2.0",
     "byteshard/exception": "^1.0",
     "byteshard/validate": "^1.0",
     "ext-simplexml": "*"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2"
   }
 }

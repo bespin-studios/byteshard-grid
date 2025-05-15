@@ -38,7 +38,7 @@ class Combo extends Column implements IDReference
      * @param int                    $accessType
      * @param string|null            $dataBinding
      */
-    public function __construct(string $id, string $label = null, array|\byteShard\Combo $options = [], ?int $width = null, int $accessType = 1, ?string $dataBinding = null)
+    public function __construct(string $id, ?string $label = null, array|\byteShard\Combo $options = [], ?int $width = null, int $accessType = 1, ?string $dataBinding = null)
     {
         parent::__construct(id: $id, label: $label, width: $width, accessType: $accessType, dataBinding: $dataBinding);
         if ($options instanceof \byteShard\Combo) {
