@@ -6,6 +6,7 @@
 
 namespace byteShard\Internal\Export;
 
+use byteShard\Enum\HttpResponseState;
 use byteShard\Internal\Export\Grid\Excel;
 use byteShard\Internal\Export\Grid\PDF\PDFGenerator;
 use byteShard\Internal\ExportHandler;
@@ -29,7 +30,7 @@ class Handler implements HandlerInterface
         $xml = simplexml_load_string($xmlString);
         $pdf = new PDFGenerator($this->exportHandler->getFilename());
         $pdf->printGrid($xml);
-        $this->exportHandler->updateSession(ExportHandler::FINISHED);
+        $this->exportHandler->updateSession(HttpResponseState::SUCCESS);
     }
 
 
@@ -49,7 +50,7 @@ class Handler implements HandlerInterface
             $GLOBALS['output_buffer'] = ob_get_clean();
             //TODO: catch exception and show error message in the client
             $xls->createFile();
-            $this->exportHandler->updateSession(ExportHandler::FINISHED);
+            $this->exportHandler->updateSession(HttpResponseState::SUCCESS);
             $result = $xls->getFile();
             header('Content-Type: '.$result->getContentType());
             header('Content-Disposition: attachment; filename="'.$this->exportHandler->getFilename().'.'.$result->getFileExtension().'"');
@@ -63,7 +64,7 @@ class Handler implements HandlerInterface
             }
             $result->getContent();
         } else {
-            $this->exportHandler->updateSession(ExportHandler::ERROR, Locale::get('byteShard.bs_export.error'));
+            $this->exportHandler->updateSession(HttpResponseState::ERROR, Locale::get('byteShard.bs_export.error'));
         }
     }
 }
