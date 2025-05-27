@@ -237,6 +237,10 @@ class ColumnProxy
                         $value = $this->getDate($value);
                     } elseif ($value instanceof DateTime) {
                         $value = $value->format($this->clientFormat);
+                    } elseif ($value instanceof \BackedEnum) {
+                        $value = $value->value;
+                    } elseif ($value instanceof \UnitEnum) {
+                        $value = $value->name;
                     } elseif ($this->columnType === Currency::class) {
                         $value = number_format((float)$value, 2, '.', '');
                     } else {
