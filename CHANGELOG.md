@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.3.2...v2.4.0) (2025-05-27)
+
+
+### Features
+
+* allow enum as grid dataBinding ([8d58e96](https://github.com/bespin-studios/byteshard-grid/commit/8d58e962a655c77f3e1f4c7d5452abd0b155aff6))
+
 ## [2.3.2](https://github.com/bespin-studios/byteshard-grid/compare/v2.3.1...v2.3.2) (2025-05-13)
 
 
