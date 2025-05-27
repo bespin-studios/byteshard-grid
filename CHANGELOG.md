@@ -1,3 +1,10 @@
+## [2.4.2](https://github.com/bespin-studios/byteshard-grid/compare/v2.4.1...v2.4.2) (2025-05-27)
+
+
+### Bug Fixes
+
+* use enum in new updated code signature of export handler ([d280c23](https://github.com/bespin-studios/byteshard-grid/commit/d280c230267d5eda1b7b03af9199c5ec548785a3))
+
 ## [2.4.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.4.0...v2.4.1) (2025-05-27)
 
 
