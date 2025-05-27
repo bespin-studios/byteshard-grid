@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.4.0...v2.4.1) (2025-05-27)
+
+
+### Bug Fixes
+
+* phpstan v2 ([c5f8bc2](https://github.com/bespin-studios/byteshard-grid/commit/c5f8bc25a5afb8bccf29e8718379699440f13a8e))
+
 # [2.4.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.3.2...v2.4.0) (2025-05-27)
 
 
