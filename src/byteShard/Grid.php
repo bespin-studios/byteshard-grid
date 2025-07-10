@@ -8,6 +8,7 @@ namespace byteShard;
 
 use byteShard\Cell\Event\OnPoll;
 use byteShard\Enum\AccessType;
+use byteShard\Enum\ContentType;
 use byteShard\Event\OnPollInterface;
 use byteShard\Event\OnSelectInterface;
 use byteShard\Grid\Column\RowSelector;
@@ -24,6 +25,10 @@ use byteShard\Internal\ExportHandler;
 use byteShard\Internal\Grid\Column;
 use byteShard\Internal\Grid\ColumnProxy;
 use byteShard\Internal\SimpleXML;
+use byteShard\Internal\Struct\ClientCell;
+use byteShard\Internal\Struct\ClientCellComponent;
+use byteShard\Internal\Struct\ClientCellEvent;
+use byteShard\Internal\Struct\ClientCellProperties;
 use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\ClientDataInterface;
 use byteShard\Internal\Struct\GetData;
@@ -50,10 +55,7 @@ abstract class Grid extends CellContent implements GridInterface
      */
     private array $columns = [];
 
-    /**
-     * @var string
-     */
-    protected string $cellContentType = 'DHTMLXGrid';
+    protected ContentType $contentType = ContentType::DhtmlxGrid;
 
     /** @var ColumnProxy[] */
     private array $columnProxies   = [];
@@ -110,6 +112,7 @@ abstract class Grid extends CellContent implements GridInterface
      * @var Style[]
      */
     private array $styles = [];
+    private ?string $pollId = null;
 
 
     public function newRunClientGridUpdate(ClientDataInterface $clientData): array
@@ -254,14 +257,12 @@ abstract class Grid extends CellContent implements GridInterface
     /**
      * @session write (setRequestTimestamp, storeCellEvents, Cell::setContentControlType)
      * @session read (Session::getDBTimeZone, Session::getClientTimeZone, Session::getDateTimeFormat)
-     * @param array $content
-     * @return array
      * @throws Exception
      * @internal
      */
-    public function getCellContent(array $content = []): array
+    public function getCellContent(): ?ClientCell
     {
-        $parentContent = parent::getCellContent($content);
+        $components = parent::getComponents();
         $this->setRequestTimestamp();
         $this->processCellContentDefinitions();
         $data = $this->defineDataBinding();
@@ -302,7 +303,24 @@ abstract class Grid extends CellContent implements GridInterface
             }
             $this->selectLastSelectedRow();
         }
-        return array_merge(
+        $pre          = $this->getJSMethodsBeforeLoading();
+        $pre['cn']    = base64_encode($nonce);
+        $components[] = new ClientCellComponent(
+            type    : $this->contentType,
+            content : $this->getXML(),
+            events  : $cellEvents,
+            pre     : $pre,
+            post    : $this->getJSMethodsAfterLoading(),
+            settings: $this->getSettings()
+        );
+        return new ClientCell(
+            new ClientCellProperties(
+                nonce     : $nonce,
+                cellHeader: $this->getCellHeader(),
+                pollId    : $this->pollId),
+            ...$components,
+        );
+        /*return array_merge(
             $parentContent,
             array_filter(['cellHeader' => $this->getCellHeader()]),
             [
@@ -315,7 +333,7 @@ abstract class Grid extends CellContent implements GridInterface
                 'pre'               => $this->getJSMethodsBeforeLoading(),
                 'post'              => $this->getJSMethodsAfterLoading(),
             ]
-        );
+        );*/
     }
 
     /**
@@ -382,7 +400,7 @@ abstract class Grid extends CellContent implements GridInterface
 
     /**
      * @param string $query
-     * @param array  $parameters
+     * @param array $parameters
      * @return $this
      * @API
      * @session none
@@ -396,7 +414,7 @@ abstract class Grid extends CellContent implements GridInterface
 
     /**
      * @param string $query
-     * @param array  $parameters
+     * @param array $parameters
      * @return $this
      * @API
      * @session none
@@ -457,7 +475,7 @@ abstract class Grid extends CellContent implements GridInterface
      * current usage: pass an array with the same number of elements as visible columns.
      * possible values are <name> or '#rspan'
      * @param array $values
-     * @param int   $level
+     * @param int $level
      * @return $this
      * @API
      * @session none
@@ -506,16 +524,22 @@ abstract class Grid extends CellContent implements GridInterface
         }
         $cellEvents = $this->getParentEventsForClient();
         $cellEvents = $this->addImplicitEvents($cellEvents);
+        $result     = [];
+        foreach ($cellEvents as $eventName => $events) {
+            foreach ($events as $handler) {
+                $result[] = new ClientCellEvent($eventName, $handler);
+            }
+        }
         if ($this->eventOnCellEdit === true) {
-            $cellEvents['onEditCell'][] = 'doOnCellEdit';
+            $result[] = new ClientCellEvent('onEditCell', 'doOnCellEdit');
         }
         if ($this->eventOnCheck === true) {
-            $cellEvents['onCheck'][] = 'doOnCheck';
+            $result[] = new ClientCellEvent('onCheck', 'doOnCheck');
         }
         if ($this->eventOnLinkClick === true) {
-            $cellEvents['onLinkClick'][] = 'doOnLinkClick';
+            $result[] = new ClientCellEvent('onLinkClick', 'doOnLinkClick');
         }
-        return $cellEvents;
+        return $result;
     }
 
     private function addImplicitEvents(array $events): array
@@ -534,7 +558,9 @@ abstract class Grid extends CellContent implements GridInterface
             switch ($interface) {
                 case OnPollInterface::class:
                     $onPoll = new OnPoll();
-                    $events = array_merge_recursive($events, $onPoll->getClientArray($this->cell->getNonce()));
+                    $pollEvent = $onPoll->getClientArray($this->cell->getNonce());
+                    $this->pollId = $pollEvent['onPoll'];
+                    $events = array_merge_recursive($events, $pollEvent);
                     break;
                 case OnSelectInterface::class:
                     $onSelect = new Grid\Event\OnSelect();
@@ -643,7 +669,7 @@ abstract class Grid extends CellContent implements GridInterface
             }
         }
         if ($this->visibleLevels > 1) {
-            $this->cellContentType = 'DHTMLXTreegrid';
+            $this->contentType = ContentType::DhtmlxTreeGrid;
         }
         $this->nodes[] = $node;
     }
@@ -1055,7 +1081,7 @@ abstract class Grid extends CellContent implements GridInterface
     /**
      * appends a row to the grid content
      * @session none
-     * @param array             $rowData content of the row to append
+     * @param array $rowData content of the row to append
      * @param ?SimpleXMLElement $parentXMLObj parent object to append the row to
      */
     private function addContentRowXML(array $rowData, ?SimpleXMLElement $parentXMLObj): ?SimpleXMLElement
