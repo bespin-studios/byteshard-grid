@@ -51,16 +51,16 @@
         },
         {
             "name": "byteshard/contracts",
-            "version": "v1.0.2",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-contracts.git",
-                "reference": "442330f7c7bfa181f22efb3574363ad0dc479c9c"
+                "reference": "2c426c369f85b8bdc3c9cf301e072d269b64cad6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-contracts/zipball/442330f7c7bfa181f22efb3574363ad0dc479c9c",
-                "reference": "442330f7c7bfa181f22efb3574363ad0dc479c9c",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-contracts/zipball/2c426c369f85b8bdc3c9cf301e072d269b64cad6",
+                "reference": "2c426c369f85b8bdc3c9cf301e072d269b64cad6",
                 "shasum": ""
             },
             "require": {
@@ -88,22 +88,22 @@
             "description": "Package for interfaces and other things used by the byteShard components",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-contracts/issues",
-                "source": "https://github.com/bespin-studios/byteshard-contracts/tree/v1.0.2"
+                "source": "https://github.com/bespin-studios/byteshard-contracts/tree/v1.0.3"
             },
-            "time": "2025-05-27T13:47:30+00:00"
+            "time": "2025-07-10T06:14:17+00:00"
         },
         {
             "name": "byteshard/core",
-            "version": "v2.9.3",
+            "version": "v2.12.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-core.git",
-                "reference": "bf326f06d230819c2e353d8f91d42364d781ca72"
+                "reference": "228114fbd1e4eb2f3d3381817833b9f67479ed70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-core/zipball/bf326f06d230819c2e353d8f91d42364d781ca72",
-                "reference": "bf326f06d230819c2e353d8f91d42364d781ca72",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-core/zipball/228114fbd1e4eb2f3d3381817833b9f67479ed70",
+                "reference": "228114fbd1e4eb2f3d3381817833b9f67479ed70",
                 "shasum": ""
             },
             "require": {
@@ -168,9 +168,9 @@
             "description": "byteShard PHP core",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-core/issues",
-                "source": "https://github.com/bespin-studios/byteshard-core/tree/v2.9.3"
+                "source": "https://github.com/bespin-studios/byteshard-core/tree/v2.12.5"
             },
-            "time": "2025-05-27T15:15:38+00:00"
+            "time": "2025-07-10T08:05:41+00:00"
         },
         {
             "name": "byteshard/debug",
@@ -217,16 +217,16 @@
         },
         {
             "name": "byteshard/enum",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-enum.git",
-                "reference": "403e341781d9b319bae997dd9370a1b7aad23183"
+                "reference": "e330205c2c7a876fb797c1ee068fcbae040313e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-enum/zipball/403e341781d9b319bae997dd9370a1b7aad23183",
-                "reference": "403e341781d9b319bae997dd9370a1b7aad23183",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-enum/zipball/e330205c2c7a876fb797c1ee068fcbae040313e2",
+                "reference": "e330205c2c7a876fb797c1ee068fcbae040313e2",
                 "shasum": ""
             },
             "require": {
@@ -253,9 +253,9 @@
             "description": "Global enums for the byteShard framework",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-enum/issues",
-                "source": "https://github.com/bespin-studios/byteshard-enum/tree/v1.2.0"
+                "source": "https://github.com/bespin-studios/byteshard-enum/tree/v1.3.0"
             },
-            "time": "2025-05-27T13:52:45+00:00"
+            "time": "2025-07-09T09:51:47+00:00"
         },
         {
             "name": "byteshard/exception",
@@ -303,16 +303,16 @@
         },
         {
             "name": "byteshard/ldap",
-            "version": "v1.0.4",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bespin-studios/byteshard-ldap.git",
-                "reference": "49f0f0cd2066edab12104bab437bc482b2215bf1"
+                "reference": "40536ce2eaddb77d2e6aa411971a36cb75caba20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bespin-studios/byteshard-ldap/zipball/49f0f0cd2066edab12104bab437bc482b2215bf1",
-                "reference": "49f0f0cd2066edab12104bab437bc482b2215bf1",
+                "url": "https://api.github.com/repos/bespin-studios/byteshard-ldap/zipball/40536ce2eaddb77d2e6aa411971a36cb75caba20",
+                "reference": "40536ce2eaddb77d2e6aa411971a36cb75caba20",
                 "shasum": ""
             },
             "require": {
@@ -347,9 +347,9 @@
             "description": "Ldap wrapper for the byteShard framework",
             "support": {
                 "issues": "https://github.com/bespin-studios/byteshard-ldap/issues",
-                "source": "https://github.com/bespin-studios/byteshard-ldap/tree/v1.0.4"
+                "source": "https://github.com/bespin-studios/byteshard-ldap/tree/v1.1.0"
             },
-            "time": "2025-05-27T13:44:17+00:00"
+            "time": "2025-06-18T07:01:33+00:00"
         },
         {
             "name": "byteshard/locale",
@@ -1806,16 +1806,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "1.29.10",
+            "version": "1.29.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "c80041b1628c4f18030407134fe88303661d4e4e"
+                "reference": "05b6c4378ddf3e81b460ea645c42b46432c0db25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/c80041b1628c4f18030407134fe88303661d4e4e",
-                "reference": "c80041b1628c4f18030407134fe88303661d4e4e",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/05b6c4378ddf3e81b460ea645c42b46432c0db25",
+                "reference": "05b6c4378ddf3e81b460ea645c42b46432c0db25",
                 "shasum": ""
             },
             "require": {
@@ -1906,9 +1906,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.29.10"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.29.11"
             },
-            "time": "2025-02-08T02:56:14+00:00"
+            "time": "2025-06-23T01:22:06+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
@@ -2392,16 +2392,16 @@
         },
         {
             "name": "tecnickcom/tcpdf",
-            "version": "6.9.4",
+            "version": "6.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "c838d7f7babb0d35763acfb9ecf78c3f45966f83"
+                "reference": "ca5b6de294512145db96bcbc94e61696599c391d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/c838d7f7babb0d35763acfb9ecf78c3f45966f83",
-                "reference": "c838d7f7babb0d35763acfb9ecf78c3f45966f83",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/ca5b6de294512145db96bcbc94e61696599c391d",
+                "reference": "ca5b6de294512145db96bcbc94e61696599c391d",
                 "shasum": ""
             },
             "require": {
@@ -2451,7 +2451,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tecnickcom/TCPDF/issues",
-                "source": "https://github.com/tecnickcom/TCPDF/tree/6.9.4"
+                "source": "https://github.com/tecnickcom/TCPDF/tree/6.10.0"
             },
             "funding": [
                 {
@@ -2459,7 +2459,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2025-05-13T11:34:35+00:00"
+            "time": "2025-05-27T18:02:28+00:00"
         },
         {
             "name": "webmozart/assert",
