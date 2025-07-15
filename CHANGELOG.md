@@ -1,3 +1,10 @@
+## [2.4.4](https://github.com/bespin-studios/byteshard-grid/compare/v2.4.3...v2.4.4) (2025-07-15)
+
+
+### Bug Fixes
+
+* use new unified component structure ([d6397b6](https://github.com/bespin-studios/byteshard-grid/commit/d6397b653f5f8bed4f451154ab35399a5c577ce2))
+
 ## [2.4.3](https://github.com/bespin-studios/byteshard-grid/compare/v2.4.2...v2.4.3) (2025-07-10)
 
 
