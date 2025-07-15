@@ -31,6 +31,7 @@ use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\Struct\ClientCellProperties;
 use byteShard\Internal\Struct\ClientData;
 use byteShard\Internal\Struct\ClientDataInterface;
+use byteShard\Internal\Struct\ContentComponent;
 use byteShard\Internal\Struct\GetData;
 use byteShard\Internal\Struct\ValidationFailed;
 use byteShard\Popup\Message;
@@ -111,7 +112,7 @@ abstract class Grid extends CellContent implements GridInterface
     /**
      * @var Style[]
      */
-    private array $styles = [];
+    private array   $styles = [];
     private ?string $pollId = null;
 
 
@@ -303,15 +304,15 @@ abstract class Grid extends CellContent implements GridInterface
             }
             $this->selectLastSelectedRow();
         }
-        $pre          = $this->getJSMethodsBeforeLoading();
-        $pre['cn']    = base64_encode($nonce);
-        $components[] = new ClientCellComponent(
-            type    : $this->contentType,
-            content : $this->getXML(),
-            events  : $cellEvents,
-            pre     : $pre,
-            post    : $this->getJSMethodsAfterLoading(),
-            settings: $this->getSettings()
+        $pre             = $this->getJSMethodsBeforeLoading();
+        $pre['settings'] = $this->getSettings();
+        $pre['cn']       = base64_encode($nonce);
+        $components[]    = new ContentComponent(
+            type   : $this->contentType,
+            content: $this->getXML(),
+            events : $cellEvents,
+            setup  : $pre,
+            update : $this->getJSMethodsAfterLoading()
         );
         return new ClientCell(
             new ClientCellProperties(
@@ -320,20 +321,6 @@ abstract class Grid extends CellContent implements GridInterface
                 pollId    : $this->pollId),
             ...$components,
         );
-        /*return array_merge(
-            $parentContent,
-            array_filter(['cellHeader' => $this->getCellHeader()]),
-            [
-                'content'           => $this->getXML(),
-                'contentType'       => $this->cellContentType,
-                'contentEvents'     => $cellEvents,
-                'contentParameters' => ['cn' => base64_encode($nonce)],
-                'contentFormat'     => $this->cell->getContentFormat(),
-                'settings'          => $this->getSettings(),
-                'pre'               => $this->getJSMethodsBeforeLoading(),
-                'post'              => $this->getJSMethodsAfterLoading(),
-            ]
-        );*/
     }
 
     /**
@@ -557,10 +544,10 @@ abstract class Grid extends CellContent implements GridInterface
         foreach ($interfaces as $interface) {
             switch ($interface) {
                 case OnPollInterface::class:
-                    $onPoll = new OnPoll();
-                    $pollEvent = $onPoll->getClientArray($this->cell->getNonce());
+                    $onPoll       = new OnPoll();
+                    $pollEvent    = $onPoll->getClientArray($this->cell->getNonce());
                     $this->pollId = $pollEvent['onPoll'];
-                    $events = array_merge_recursive($events, $pollEvent);
+                    $events       = array_merge_recursive($events, $pollEvent);
                     break;
                 case OnSelectInterface::class:
                     $onSelect = new Grid\Event\OnSelect();
