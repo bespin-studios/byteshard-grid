@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.4.4...v2.5.0) (2025-07-21)
+
+
+### Features
+
+* grid now has fallback content ([4e259b4](https://github.com/bespin-studios/byteshard-grid/commit/4e259b492b0450a835b0fb4965ab1ec248466ac0))
+
 ## [2.4.4](https://github.com/bespin-studios/byteshard-grid/compare/v2.4.3...v2.4.4) (2025-07-15)
 
 
