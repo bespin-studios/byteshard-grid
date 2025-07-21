@@ -261,11 +261,15 @@ abstract class Grid extends CellContent implements GridInterface
      * @throws Exception
      * @internal
      */
-    public function getCellContent(): ?ClientCell
+    public function getCellContent(bool $resetNonce = true): ?ClientCell
     {
-        $components = parent::getComponents();
+        parent::getCellContent($resetNonce);
         $this->setRequestTimestamp();
         $this->processCellContentDefinitions();
+        if ($this->hasFallbackContent()) {
+            return $this->getFallbackContent()->getCellContent(false);
+        }
+        $components = parent::getComponents();
         $data = $this->defineDataBinding();
         if (!empty($data)) {
             $this->setData($data);
