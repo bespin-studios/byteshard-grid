@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.5.0...v2.5.1) (2025-10-01)
+
+
+### Bug Fixes
+
+* less response content ([8788831](https://github.com/bespin-studios/byteshard-grid/commit/8788831d195c9d542344d52c3b406cdbd816ea55))
+
 # [2.5.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.4.4...v2.5.0) (2025-07-21)
 
 
