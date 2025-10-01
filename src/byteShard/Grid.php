@@ -270,7 +270,7 @@ abstract class Grid extends CellContent implements GridInterface
             return $this->getFallbackContent()->getCellContent(false);
         }
         $components = parent::getComponents();
-        $data = $this->defineDataBinding();
+        $data       = $this->defineDataBinding();
         if (!empty($data)) {
             $this->setData($data);
         }
@@ -564,12 +564,15 @@ abstract class Grid extends CellContent implements GridInterface
 
     private function getSettings(): array
     {
-        $cookieName = $this->getCookieName();
-        $settings   = [
+        $cookieName           = $this->getCookieName();
+        $cookieExpirationDate = 'expires='.(new DateTime('now'))->modify('+10 years')->format('D, d M Y').' 23:00:00 GMT';
+        $cookieParameters     = $cookieExpirationDate.';SameSite=Lax';
+        $settings             = [
             'gridStatsInCellHeader' => $this->gridStatsInCellHeader,
             'editLvl'               => $this->editLevel,
             'timestamp'             => $this->timestamp ?? date('YmdHis', time()),
             'cookieName'            => $cookieName,
+            'cookieParam'           => $cookieParameters,
             'locale'                => Session::getPrimaryLocale(),
             'i18n'                  => ['d' => ',', 'g' => '.']
         ];
@@ -629,20 +632,17 @@ abstract class Grid extends CellContent implements GridInterface
         if ($this->columnMove) {
             $methods['enableColumnMove'] = true;
         }
-        $cookieName           = $this->getCookieName();
-        $cookieExpirationDate = 'expires='.(new DateTime('now'))->modify('+10 years')->format('D, d M Y').' 23:00:00 GMT';
-        $cookieParameters     = $cookieExpirationDate.';SameSite=Lax';
         if ($this->cookieOrderSaving) {
-            $methods['loadOrderFromCookie'] = $cookieName;
-            $methods['enableOrderSaving']   = [$cookieName, $cookieParameters];
+            $methods['loadOrderFromCookie'] = true;
+            $methods['enableOrderSaving']   = true;
         }
         if ($this->cookieSizeSaving) {
-            $methods['loadSizeFromCookie']   = $cookieName;
-            $methods['enableAutoSizeSaving'] = [$cookieName, $cookieParameters];
+            $methods['loadSizeFromCookie']   = true;
+            $methods['enableAutoSizeSaving'] = true;
         }
         if ($this->cookieHiddenSaving) {
-            $methods['loadHiddenColumnsFromCookie']   = $cookieName;
-            $methods['enableAutoHiddenColumnsSaving'] = [$cookieName, $cookieParameters];
+            $methods['loadHiddenColumnsFromCookie']   = true;
+            $methods['enableAutoHiddenColumnsSaving'] = true;
         }
         return $methods;
     }
