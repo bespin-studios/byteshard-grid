@@ -222,9 +222,9 @@ class PDFGenerator
     {
         $this->footerColumns = [];
         if (isset($footer->columns)) {
-            $columnsRows = $footer->columns;
-            $i           = 0;
-            foreach ($columnsRows as $columns) {
+            $rows = $footer->columns;
+            $i    = 0;
+            foreach ($rows as $columns) {
                 $summaryWidth = 0;
                 $j            = 0;
                 foreach ($columns as $column) {
@@ -237,8 +237,8 @@ class PDFGenerator
                     $columnArr['width']        = $this->columns[0][$j]['width'] ?? 1;
                     $columnArr['type']         = trim((string)$column->attributes()?->type);
                     $columnArr['align']        = trim((string)$column->attributes()?->align);
-                    $columnArr['colspan']      = trim((string)$column->attributes()?->colspan);
-                    $columnArr['rowspan']      = trim((string)$column->attributes()?->rowspan);
+                    $columnArr['colspan']      = (int)trim((string)$column->attributes()?->colspan);
+                    $columnArr['rowspan']      = (int)trim((string)$column->attributes()?->rowspan);
                     $summaryWidth              += $columnArr['width'];
                     $this->footerColumns[$i][] = $columnArr;
                     if ($columnArr['colspan'] != '') {
