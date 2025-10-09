@@ -1,3 +1,17 @@
+# [2.6.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.5.1...v2.6.0) (2025-10-09)
+
+
+### Bug Fixes
+
+* performance improvements ([4641645](https://github.com/bespin-studios/byteshard-grid/commit/4641645f191f3a967ca9e0f5c7bd0f7124160c98))
+* phpstan issues ([531f71a](https://github.com/bespin-studios/byteshard-grid/commit/531f71aa4df3ee6855d1b82f9488cf14740d3b52))
+* update dependencies ([52fe8d6](https://github.com/bespin-studios/byteshard-grid/commit/52fe8d6e8bfe5935b14de1167fefdb1b2e9d14a1))
+
+
+### Features
+
+* css classes on rows ([7691d10](https://github.com/bespin-studios/byteshard-grid/commit/7691d107105d5478dc63f8170440b21907cc60dd))
+
 ## [2.5.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.5.0...v2.5.1) (2025-10-01)
 
 
