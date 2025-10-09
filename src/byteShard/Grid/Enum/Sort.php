@@ -5,18 +5,17 @@
  */
 
 namespace byteShard\Grid\Enum;
-use byteShard\Enum;
 
 /**
  * Class Sort
  * @package byteShard\Grid\Enum
  */
-final class Sort extends Enum\Enum
+enum Sort: string
 {
-    const DATE_GERMAN     = 'sort_GERDate';
-    const DATETIME_GERMAN = 'sort_GERDateTime';
-    const STRING          = 'str';
-    const INTEGER         = 'int';
-    const IMAGE           = 'sort_img';
-    const DISABLE         = 'na';
+    case DATE_GERMAN = 'sort_GERDate';
+    case DATETIME_GERMAN = 'sort_GERDateTime';
+    case STRING = 'str';
+    case INTEGER = 'int';
+    case IMAGE = 'sort_img';
+    case DISABLE = 'na';
 }

@@ -6,7 +6,6 @@
 
 namespace byteShard\Grid\Column;
 
-use byteShard\Enum;
 use byteShard\Grid;
 use byteShard\Internal\Grid\Column;
 
@@ -16,16 +15,14 @@ use byteShard\Internal\Grid\Column;
  */
 class RowSelector extends Column
 {
-    protected string             $type                  = 'rowSelector';
-    protected string             $dhxTypeRw             = Grid\Enum\Type::CHECKBOX;
-    protected string             $dhxTypeRo             = Grid\Enum\Type::CHECKBOX_READONLY;
-    protected string             $sort                  = Grid\Enum\Sort::STRING;
-    protected string             $align                 = Grid\Enum\Align::CENTER;
-    protected string             $filter                = Grid\Enum\Filter::CHECKBOX;
-    protected int                $width                 = 55;
-    protected Enum\DB\ColumnType $db_column_type        = Enum\DB\ColumnType::VARCHAR;
-    private bool                 $comply_to_access_type = false;
-    private bool                 $readonlyHidden        = false;
+    protected Grid\Enum\Type   $dhxTypeRw             = Grid\Enum\Type::CHECKBOX;
+    protected Grid\Enum\Type   $dhxTypeRo             = Grid\Enum\Type::CHECKBOX_READONLY;
+    protected Grid\Enum\Sort   $sort                  = Grid\Enum\Sort::STRING;
+    protected Grid\Enum\Align  $align                 = Grid\Enum\Align::CENTER;
+    protected Grid\Enum\Filter $filter                = Grid\Enum\Filter::CHECKBOX;
+    protected int              $width                 = 55;
+    private bool               $comply_to_access_type = false;
+    private bool               $readonlyHidden        = false;
 
     public function __construct(?string $id = null, ?string $label = null, ?int $width = null, ?string $dataBinding = null)
     {

@@ -6,7 +6,6 @@
 
 namespace byteShard\Grid\Column;
 
-use byteShard\Enum;
 use byteShard\Grid;
 use byteShard\Internal\Grid\Column;
 
@@ -16,12 +15,10 @@ use byteShard\Internal\Grid\Column;
  */
 class Tristate extends Column
 {
-    protected string             $type           = 'tristate';
-    protected string             $dhxTypeRw      = Grid\Enum\Type::CHECKBOX_TRISTATE;
-    protected string             $dhxTypeRo      = Grid\Enum\Type::CHECKBOX_TRISTATE_READONLY;
-    protected string             $sort           = Grid\Enum\Sort::STRING;
-    protected string             $align          = Grid\Enum\Align::CENTER;
-    protected string             $filter         = Grid\Enum\Filter::TRISTATE;
-    protected int                $width          = 100;
-    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
+    protected Grid\Enum\Type   $dhxTypeRw = Grid\Enum\Type::CHECKBOX_TRISTATE;
+    protected Grid\Enum\Type   $dhxTypeRo = Grid\Enum\Type::CHECKBOX_TRISTATE_READONLY;
+    protected Grid\Enum\Sort   $sort      = Grid\Enum\Sort::STRING;
+    protected Grid\Enum\Align  $align     = Grid\Enum\Align::CENTER;
+    protected Grid\Enum\Filter $filter    = Grid\Enum\Filter::TRISTATE;
+    protected int              $width     = 100;
 }

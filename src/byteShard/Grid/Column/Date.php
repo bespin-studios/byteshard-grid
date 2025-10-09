@@ -17,29 +17,27 @@ use byteShard\Internal\Grid\CalColumn;
  */
 class Date extends CalColumn
 {
-    public bool                  $convert_date      = true;
-    protected string             $client_format     = '';
-    protected string             $type              = 'date';
-    protected string             $dhxTypeRw         = Grid\Enum\Type::TEXT_NOHTML;
-    protected string             $dhxTypeRo         = Grid\Enum\Type::TEXT_NOHTML_READONLY;
-    protected string             $sort              = Grid\Enum\Sort::DATETIME_GERMAN;
-    protected string             $align             = Grid\Enum\Align::CENTER;
-    protected string             $filter            = Grid\Enum\Filter::TEXT;
-    protected int                $defaultWidth      = 120;
-    protected Enum\DB\ColumnType $db_column_type    = Enum\DB\ColumnType::DATETIME2;
-    protected string             $dbDateFormat      = 'Y-m-d H:i:s.u';
-    protected string             $displayDateFormat = 'd.m.Y H:i:s';
-    protected string             $dbTimezone        = 'UTC';
-    protected string             $displayTimezone   = 'GMT+1';
-    protected bool               $display_time      = false;
+    public bool                $convert_date      = true;
+    protected string           $client_format     = '';
+    protected Grid\Enum\Type   $dhxTypeRw         = Grid\Enum\Type::TEXT_NOHTML;
+    protected Grid\Enum\Type   $dhxTypeRo         = Grid\Enum\Type::TEXT_NOHTML_READONLY;
+    protected Grid\Enum\Sort   $sort              = Grid\Enum\Sort::DATETIME_GERMAN;
+    protected Grid\Enum\Align  $align             = Grid\Enum\Align::CENTER;
+    protected Grid\Enum\Filter $filter            = Grid\Enum\Filter::TEXT;
+    protected int              $defaultWidth      = 120;
+    protected string           $dbDateFormat      = 'Y-m-d H:i:s.u';
+    protected string           $displayDateFormat = 'd.m.Y H:i:s';
+    protected string           $dbTimezone        = 'UTC';
+    protected string           $displayTimezone   = 'GMT+1';
+    protected bool             $display_time      = false;
 
     /**
      * Date constructor.
-     * @param string      $id
-     * @param ?string     $label
-     * @param int|null    $width
-     * @param int|Access  $accessType
-     * @param string      $displayDateFormat
+     * @param string $id
+     * @param ?string $label
+     * @param int|null $width
+     * @param int|Access $accessType
+     * @param string $displayDateFormat
      * @param string|null $dataBinding
      */
     public function __construct(string $id, ?string $label = null, ?int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, string $displayDateFormat = '', ?string $dataBinding = null)

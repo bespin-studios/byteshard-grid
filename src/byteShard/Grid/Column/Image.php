@@ -22,25 +22,21 @@ use Exception;
  */
 class Image extends Column implements EncryptedObjectValueInterface
 {
-    protected string             $type           = 'image';
-    protected string             $dhxTypeRw      = Grid\Enum\Type::IMAGE;
-    protected string             $dhxTypeRo      = Grid\Enum\Type::IMAGE;
-    protected string             $sort           = Grid\Enum\Sort::IMAGE;
-    protected string             $align          = Grid\Enum\Align::CENTER;
-    protected string             $filter         = Grid\Enum\Filter::COMBO_ADVANCED;
-    protected int                $width          = 100;
-    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
-    /**
-     * @var Grid\Cell\Image[]
-     */
+    protected Grid\Enum\Type   $dhxTypeRw = Grid\Enum\Type::IMAGE;
+    protected Grid\Enum\Type   $dhxTypeRo = Grid\Enum\Type::IMAGE;
+    protected Grid\Enum\Sort   $sort      = Grid\Enum\Sort::IMAGE;
+    protected Grid\Enum\Align  $align     = Grid\Enum\Align::CENTER;
+    protected Grid\Enum\Filter $filter    = Grid\Enum\Filter::COMBO_ADVANCED;
+    protected int              $width     = 100;
+    /** @var array<Grid\Cell\Image> */
     protected array $metadata = [];
 
     /**
      * Image constructor.
-     * @param string      $id
+     * @param string $id
      * @param string|null $label
-     * @param int|null    $width
-     * @param int|Access  $accessType
+     * @param int|null $width
+     * @param int|Access $accessType
      * @param string|null $dataBinding
      */
     public function __construct(string $id, ?string $label = null, ?int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)

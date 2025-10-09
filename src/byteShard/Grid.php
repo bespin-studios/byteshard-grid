@@ -12,6 +12,7 @@ use byteShard\Enum\ContentType;
 use byteShard\Event\OnPollInterface;
 use byteShard\Event\OnSelectInterface;
 use byteShard\Grid\Column\RowSelector;
+use byteShard\Grid\CssClass;
 use byteShard\Grid\Event\OnDrop;
 use byteShard\Grid\GridInterface;
 use byteShard\Grid\Node;
@@ -24,9 +25,9 @@ use byteShard\Internal\Export\HandlerInterface;
 use byteShard\Internal\ExportHandler;
 use byteShard\Internal\Grid\Column;
 use byteShard\Internal\Grid\ColumnProxy;
+use byteShard\Internal\Grid\Row;
 use byteShard\Internal\SimpleXML;
 use byteShard\Internal\Struct\ClientCell;
-use byteShard\Internal\Struct\ClientCellComponent;
 use byteShard\Internal\Struct\ClientCellEvent;
 use byteShard\Internal\Struct\ClientCellProperties;
 use byteShard\Internal\Struct\ClientData;
@@ -99,11 +100,11 @@ abstract class Grid extends CellContent implements GridInterface
     private int   $visibleLevels = 0;
     private int   $expandToLevel = 0;
     private array $inputArray    = [];
-    private array $outputArray   = [];
-    private bool  $sort          = true;
+    /** @var array<string, Row> */
+    private array $outputArray = [];
+    private bool  $sort        = true;
 
     // Class internal variables for building output xml
-    private array            $columnDefinition = [];
     private SimpleXMLElement $outputXml;
 
     private array  $columnData         = [];
@@ -112,8 +113,10 @@ abstract class Grid extends CellContent implements GridInterface
     /**
      * @var Style[]
      */
-    private array   $styles = [];
-    private ?string $pollId = null;
+    private array $rowStyles = [];
+    /** @var array<CssClass> */
+    private array   $rowClasses = [];
+    private ?string $pollId     = null;
 
 
     public function newRunClientGridUpdate(ClientDataInterface $clientData): array
@@ -342,11 +345,12 @@ abstract class Grid extends CellContent implements GridInterface
     {
         $serverTimeZone = Settings::getServerTimeZone();
         $clientTimeZone = Session::getClientTimeZone();
+        $baseLocale     = $this->getScopeLocaleTokenBasedOnNamespace('Cell').'.Grid.';
         foreach ($this->columns as $column) {
             $columnAccessType = $column->getAccessType();
             if ($columnAccessType > AccessType::NONE) {
                 // TODO: check if this needs to be called here and in getColumnDefinition.
-                $column->setLocaleBaseToken($this->cell->createLocaleBaseToken('Cell').'.Grid.');
+                $column->setLocaleBaseToken($baseLocale);
                 $events = $column->getEvents();
                 $column->getEncryptedName($nonce);
 
@@ -371,7 +375,7 @@ abstract class Grid extends CellContent implements GridInterface
                 }
                 if ($columnAccessType === AccessType::RW || !empty($events)) {
                     // TODO: add validations to grid columns, replace 8th parameter by validations
-                    $this->cell->setContentControlType($column->encryptedName, $column->getField(), $columnAccessType, $column->getDBColumnType(), $column->getType(), $column->getLabel(), [], $column->getDateFormat());
+                    $this->cell->setContentControlType($column->encryptedName, $column->getField(), $columnAccessType, $column->getType(), $column->getLabel(), $column->getDateFormat());
                 }
                 $this->numberOfColumns++;
 
@@ -741,25 +745,38 @@ abstract class Grid extends CellContent implements GridInterface
 
     public function setStyles(Style ...$styles): void
     {
-        $this->styles = $styles;
+        $this->rowStyles = $styles;
+    }
+
+    public function setCssClasses(CssClass ...$cssClasses): void
+    {
+        $this->rowClasses = $cssClasses;
     }
 
     /**
      * @param array<int, string> $rowIdPart
-     * @return array<string, string>
+     * @return array<string, array<string, string>>
      */
-    private function getRowStyles(array $rowIdPart): array
+    private function getRowAttributes(array $rowIdPart): array
     {
-        $rowStyles = [];
-        foreach ($this->styles as $style) {
+        $rowAttributes = [];
+        foreach ($this->rowStyles as $style) {
             $rowIdArray = [];
             foreach ($rowIdPart as $rowIdIndex) {
                 $rowIdArray[$rowIdIndex] = $style->getIdValue($rowIdIndex);
             }
-            $rowIdObject                                = new RowID($rowIdArray);
-            $rowStyles[$rowIdObject->getEncodedRowId()] = $style->getStyle();
+            $rowIdObject                                             = new RowID($rowIdArray);
+            $rowAttributes[$rowIdObject->getEncodedRowId()]['style'] = $style->getStyle();
         }
-        return $rowStyles;
+        foreach ($this->rowClasses as $class) {
+            $rowIdArray = [];
+            foreach ($rowIdPart as $rowIdIndex) {
+                $rowIdArray[$rowIdIndex] = $class->getIdValue($rowIdIndex);
+            }
+            $rowIdObject                                             = new RowID($rowIdArray);
+            $rowAttributes[$rowIdObject->getEncodedRowId()]['class'] = $class->getClass();
+        }
+        return $rowAttributes;
     }
 
     /**
@@ -770,50 +787,31 @@ abstract class Grid extends CellContent implements GridInterface
         if (count($this->columnProxies) > 0) {
             $rowIdPart     = [];
             $rowAccessType = 0;
-            $rowType       = '';
+            $dataBinding   = '';
             foreach ($this->nodes as $node) {
                 if ($node->isVisible()) {
-                    $rowType       = $node->getFieldToDisplayInClient();
+                    $dataBinding   = $node->getFieldToDisplayInClient();
                     $rowAccessType = $node->getAccessType();
                 }
                 if ($node->includeIdInRowId()) {
                     $rowIdPart[] = $node->getIdField();
                 }
             }
-            $rowStyles   = $this->getRowStyles($rowIdPart);
-            $localeCache = [];
+            $rowAttributes = $this->getRowAttributes($rowIdPart);
+            $localeCache   = [];
+            $treeColumn    = null;
+            foreach ($this->columnProxies as $columnProxy) {
+                if ($columnProxy->isTreeColumn()) {
+                    $treeColumn = $columnProxy;
+                }
+            }
             foreach ($this->inputArray as $key => $val) {
-                // safe memory, unset rows as they're processed
+                // save memory, unset rows as they're processed
                 unset($this->inputArray[$key]);
 
-                // generate Row ID
-                $rowIdArray = [];
-                foreach ($rowIdPart as $rowIdIndex) {
-                    $rowIdArray[$rowIdIndex] = $val->{$rowIdIndex};
-                }
-                $rowIdObject = new RowID($rowIdArray);
-                $rowId       = $rowIdObject->getEncodedRowId();
+                $row = new Row($rowIdPart, $nonce, $val, $this->columnProxies, $dataBinding, $rowAccessType, $localeCache, $rowAttributes, $treeColumn);
 
-                // set technical values
-                $this->outputArray[$rowId]['row'] = [
-                    'level'      => 1,
-                    'node'       => $rowType,
-                    'accessType' => isset($val->BSRowAccessType) ? min($rowAccessType, (int)$val->BSRowAccessType) : $rowAccessType,
-                    'attr'       => [
-                        'id' => $rowIdObject->getEncryptedRowId($nonce)
-                    ],
-                    'usr'        => []
-                ];
-                if (isset($rowStyles[$rowId])) {
-                    $this->outputArray[$rowId]['row']['attr']['style'] = $rowStyles[$rowId];
-                } elseif (!empty($val->Style)) {
-                    $this->outputArray[$rowId]['row']['attr']['style'] = $val->Style;
-                }
-
-                // set content values
-                foreach ($this->columnProxies as $columnProxy) {
-                    $this->outputArray[$rowId]['columns'][$columnProxy->encryptedName] = $columnProxy->getValue($val, $this->outputArray[$rowId]['row']['attr']['id'], $rowType, $localeCache, $this->outputArray[$rowId]['row']['accessType']);
-                }
+                $this->outputArray[$row->getEncodedRowId()] = $row;
             }
         }
     }
@@ -838,6 +836,14 @@ abstract class Grid extends CellContent implements GridInterface
                 ];
             }
             $localeCache = [];
+
+            $treeColumn    = null;
+            foreach ($this->columnProxies as $columnProxy) {
+                if ($columnProxy->isTreeColumn()) {
+                    $treeColumn = $columnProxy;
+                }
+            }
+
             //TODO: rowStyles
             foreach ($this->inputArray as $key => $val) {
                 unset($this->inputArray[$key]);
@@ -847,32 +853,12 @@ abstract class Grid extends CellContent implements GridInterface
                     if ($node['visible'] === true && $val->{$node['id']} !== null) {
                         $cryptoRowId[$node['id']] = $val->{$node['id']};
                         if ($previousId[$nodeIndex] !== $val->{$node['id']}) {
-                            $rowIdObject = new RowID($cryptoRowId);
-                            $rowId       = $rowIdObject->getEncodedRowId();
-
-                            // set technical values
-                            $this->outputArray[$rowId]['row'] = [
-                                'level'      => $currentLevel,
-                                'node'       => $node['field'],
-                                'accessType' => $node['accessType'],
-                                'attr'       => [
-                                    'id' => $rowIdObject->getEncryptedRowId($nonce)
-                                ],
-                                'usr'        => []
-                            ];
-                            if (isset($val->Style) && !empty($val->Style)) {
-                                $this->outputArray[$rowId]['row']['attr']['style'] = $val->Style;
-                            }
-
-                            // expand grid if desired
+                            $row = new Row($cryptoRowId, $nonce, $val, $this->columnProxies, $node['field'], $node['accessType'], $localeCache, [], $treeColumn, $currentLevel);
                             if ($this->expandToLevel > $currentLevel) {
-                                $this->outputArray[$rowId]['row']['attr']['open'] = '1';
+                                $row->setExpanded();
                             }
+                            $this->outputArray[$row->getEncodedRowId()] = $row;
 
-                            // set content values
-                            foreach ($this->columnProxies as $columnProxy) {
-                                $this->outputArray[$rowId]['columns'][$columnProxy->encryptedName] = $columnProxy->getValue($val, $this->outputArray[$rowId]['row']['attr']['id'], $node['field'], $localeCache, $this->outputArray[$rowId]['row']['accessType']);
-                            }
                             $previousId[$nodeIndex] = $val->{$node['id']};
                         }
                         $currentLevel++;
@@ -894,8 +880,8 @@ abstract class Grid extends CellContent implements GridInterface
             if (!empty($ids)) {
                 $rowId  = new RowID($ids);
                 $select = $rowId->getEncodedRowId();
-                if (array_key_exists($select, $this->outputArray)) {
-                    $this->outputArray[$select]['row']['attr']['select'] = '1';
+                if (isset($this->outputArray[$select])) {
+                    $this->outputArray[$select]->setSelected();
                     $this->openTreeWithSelectedChildren();
                 }
             }
@@ -914,7 +900,7 @@ abstract class Grid extends CellContent implements GridInterface
                     $rowId[$idField] = $this->selectedID->{$idField};
                     $row             = json_encode($rowId);
                     if (isset($this->outputArray[$row])) {
-                        $this->outputArray[$row]['row']['attr']['open'] = '1';
+                        $this->outputArray[$row]->setExpanded();
                     }
                 }
             }
@@ -932,122 +918,44 @@ abstract class Grid extends CellContent implements GridInterface
     {
         SimpleXML::initializeDecode();
         $this->outputXml = new SimpleXMLElement('<?xml version="1.0" encoding="'.$this->getOutputCharset().'" ?><rows/>');
+        $this->outputXml->addAttribute('total', count($this->outputArray));
 
-        $this->columnDefinition = [];
-        foreach ($this->columnProxies as $column) {
-            $this->columnDefinition[$column->encryptedName] = $column->getColumnDefinition();
-        }
-        if ($init) {
+        if ($init === true) {
             $this->buildHeaderAsXML();
         }
-        $this->attachUserDataAsXML();
         $this->buildContentAsXML();
         return SimpleXML::asString($this->outputXml);
     }
 
-    /*
-     * Appends head to outputXml
-     * @session none
-     */
     private function buildHeaderAsXML(): void
     {
-        $header  = SimpleXML::addChild($this->outputXml, 'head');
-        $filters = [];
-        // add column definition to xml
-        foreach ($this->columnDefinition as $column) {
-            $col = SimpleXML::addChild($header, 'column', $column['label'], null, true);
-            // add defined attributes to the column
-            foreach ($column['attributes'] as $attributeName => $attributeValue) {
-                SimpleXML::addAttribute($col, $attributeName, $attributeValue);
-            }
-
-            // Wenn als colType tree gefunden wird die Editierbarkeit anhand des accessType setzen
-            /*
-             * if ($attributeName == "type" && $attributeValue == "tree" && $column['accessType'] == 2){ $this->parameters['beforeInit']['enableTreeCellEdit']=true; }else{ $this->parameters['beforeInit']['enableTreeCellEdit']=false; }
-             */
-
-            // Spezialbehandlung der Comboboxen (coro oder dhtmlxCombo)
-            switch ($column['attributes']['type']) {
-                // Ohne Break da auch die combo Attribute zutreffen
-                /** @noinspection PhpMissingBreakStatementInspection */
-                case Grid\Enum\Type::COMBO_READONLY:
-                    SimpleXML::addAttribute($col, 'editable', 'false', null, true);
-                case Grid\Enum\Type::COMBO:
-                    SimpleXML::addAttribute($col, 'xmlcontent', '1', null, true);
-                    // @TODO: Alle Einträge anhängen
-                    // Create a Combo XML and embed it in the GRID XML
-                    if (isset($column['comboboxValues'])) {
-                        if ($column['comboboxValues'] instanceof Combo) {
-                            $column['comboboxValues']->getXMLElement($col, false);
-                            /*$comboXML = new SimpleXMLElement($column['comboboxValues']->getXML());
-                            //TODO: check if getXMLElement($col) doesn't create the same xml. This should perform better and unified, more simple code
-                            $col->appendXML($comboXML, false);*/
-                        } else {
-                            $comboXML = new SimpleXMLElement(Combo::getXMLString($column['comboboxValues']));
-                            SimpleXML::appendXML($col, $comboXML, false);
-                        }
-                    }
-                    break;
-                case Grid\Enum\Type::SELECT_READONLY:
-                    // Gültige Combobox Werte für Spalte setzen
-                    if (isset($column['comboboxValues'])) {
-                        foreach ($column['comboboxValues'] as $optionIdx => $optionName) {
-                            $option = SimpleXML::addChild($col, 'option', $optionName, null, true);
-                            SimpleXML::addAttribute($option, 'value', $optionIdx, null, true);
-                        }
-                    }
-                    break;
-                /*case Grid\Column::CELLTYPE_checkbox:
-                case Grid\Column::CELLTYPE_checkbox_readonly:
-                   $option = $col->addChild('option', 'Nein');
-                   $option->addAttribute('value', 0);
-                   $option = $col->addChild('option', 'Ja');
-                   $option->addAttribute('value', 1);
-                   break;*/
-            }
-            // Array für Filter-Initialisierung zusammensetzen
-            $filters[] = (isset($column['attributes']['filter'])) ? $column['attributes']['filter'] : '';
+        $header       = $this->outputXml->addChild('head');
+        $filters      = [];
+        $exportWidths = [];
+        foreach ($this->columnProxies as $column) {
+            $column->addColumnHeaderToXml($header);
+            $filters[] = $column->getFilter();
+            [$columnId, $exportWidth] = $column->getExportWidth();
+            $exportWidths[$columnId] = $exportWidth;
         }
-        // ### beforeInit Abschnitt erstellen
-        $beforeInit = SimpleXML::addChild($header, 'beforeInit', null, null, true);
-        // Zusätzliche Header Zeilen
-        if (count($this->multilineHeader) > 0) {
-            foreach ($this->multilineHeader as $columns) {
-                $call = SimpleXML::addChild($beforeInit, 'call', null, null, true);
-                SimpleXML::addAttribute($call, 'command', 'attachHeader', null, true);
-                SimpleXML::addChild($call, 'param', implode(',', $columns), null, true);
-            }
+        $beforeInit = $header?->addChild('beforeInit');
+        foreach ($this->multilineHeader as $multilineColumns) {
+            $call = $beforeInit->addChild('call');
+            $call->addAttribute('command', 'attachHeader');
+            SimpleXML::addChild($call, 'param', implode(',', $multilineColumns), null, true);
         }
-        // Filter: Wenn Filter in mindestens einer Spalte konfiguriert ist, die attachHeader Funktion ausführen
-        if (strlen(implode(',', $filters)) > count($filters)) {
-            $call = SimpleXML::addChild($beforeInit, 'call', null, null, true);
-            SimpleXML::addAttribute($call, 'command', 'attachHeader', null, true);
-            SimpleXML::addChild($call, 'param', implode(',', $filters), null, true);
+        $filterString = implode(',', $filters);
+        if (strlen($filterString) > count($filters)) {
+            $call = $beforeInit->addChild('call');
+            $call->addAttribute('command', 'attachHeader');
+            SimpleXML::addChild($call, 'param', $filterString, null, true);
         }
-
-        // Sonstige Einstellungen
         $header?->addChild('settings')?->addChild('colwidth', 'px');
-    }
-
-    /**
-     * Appends userdata to outputXml
-     * @session none
-     */
-    private function attachUserDataAsXML(): void
-    {
-        // XLS-Spaltenbreiten auslesen und definieren
-        $xlsWidth = [];
-        foreach ($this->columnDefinition as $colID => $gridColumn) {
-            $xlsWidth[$colID] = $gridColumn['attributes']['width_xls'];
-        }
-        $json = json_encode($xlsWidth);
-        if ($json !== false) {
-            $data = SimpleXML::addChild($this->outputXml, 'userdata', $json, null, true);
+        $exportWidthJson = json_encode($exportWidths);
+        if ($exportWidthJson !== false) {
+            $data = SimpleXML::addChild($this->outputXml, 'userdata', $exportWidthJson, null, true);
             $data?->addAttribute('name', 'xlsExportWidth');
         }
-        /*
-         * //Globale userData direkt an Ergebnis-Objekt hängen if(isset($this->arParameters['userData']) && is_arrayWC($this->arParameters['userData'])){ foreach($this->arParameters['userData'] as $name=>$value){ $data=$this->outputXml->addChild("userdata",(is_bool($value))?($value ? 'true' : 'false'):$value); $data->addAttribute("name",$name); } }
-         */
     }
 
     /**
@@ -1057,60 +965,20 @@ abstract class Grid extends CellContent implements GridInterface
     private function buildContentAsXML(): void
     {
         $lastRow = [];
-        foreach ($this->outputArray as $rowData) {
-            // Entsprechend dem Tree level die row unter das entsprechende Objekt hängen
-            if ($rowData['row']['level'] === 1) {
-                // Oberste Ebene
-                $lastRow[$rowData['row']['level']] = $this->addContentRowXML($rowData, $this->outputXml);
-            } else {
-                // Alle Unterebenen
-                $lastRow[$rowData['row']['level']] = $this->addContentRowXML($rowData, $lastRow[$rowData['row']['level'] - 1]);
+        if ($this->visibleLevels === 1) {
+            foreach ($this->outputArray as $row) {
+                $row->addRowToXml($this->outputXml);
             }
-        }
-    }
-
-    /**
-     * appends a row to the grid content
-     * @session none
-     * @param array $rowData content of the row to append
-     * @param ?SimpleXMLElement $parentXMLObj parent object to append the row to
-     */
-    private function addContentRowXML(array $rowData, ?SimpleXMLElement $parentXMLObj): ?SimpleXMLElement
-    {
-        if ($parentXMLObj === null) {
-            return null;
-        }
-        $row = $parentXMLObj->addChild('row');
-        if ($row !== null) {
-            foreach ($rowData['row']['attr'] as $attribute => $value) {
-                // attributes: style, open, select
-                SimpleXML::addAttribute($row, $attribute, $value);
-            }
-
-            // add userdata
-            // optional: define export colors
-            // past implementation: ['usr']['exportColor'] = 0
-            foreach ($rowData['row']['usr'] as $name => $value) {
-                $userData = SimpleXML::addChild($row, 'userdata', $value);
-                SimpleXML::addAttribute($userData, 'name', $name, null, true);
-            }
-
-            foreach ($this->columnDefinition as $columnId => $column) {
-                // loop over each cell
-                if ($rowData['columns'][$columnId]['cdata'] === true) {
-                    $cell = SimpleXML::addChildCData($row, 'cell', $rowData['columns'][$columnId]['value']);
+        } else {
+            foreach ($this->outputArray as $row) {
+                $level = $row->getLevel();
+                if ($level === 1) {
+                    $lastRow[$level] = $row->addRowToXml($this->outputXml);
                 } else {
-                    $cell = SimpleXML::addChild($row, 'cell', $rowData['columns'][$columnId]['value'], null, true);
-                }
-
-                if ($cell !== null) {
-                    foreach ($rowData['columns'][$columnId]['attributes'] as $name => $value) {
-                        SimpleXML::addAttribute($cell, $name, $value);
-                    }
+                    $lastRow[$level] = $row->addRowToXml($lastRow[$level - 1]);
                 }
             }
         }
-        return $row;
     }
 
     public function getExportHandler(ExportHandler $exportHandler): ?HandlerInterface

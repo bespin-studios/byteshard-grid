@@ -6,7 +6,6 @@
 
 namespace byteShard\Grid\Column;
 
-use byteShard\Enum;
 use byteShard\Grid;
 use byteShard\Internal\Grid\Column;
 
@@ -16,17 +15,15 @@ use byteShard\Internal\Grid\Column;
  */
 class Currency extends Column
 {
-    protected string             $type           = 'currency';
-    protected string             $dhxTypeRw      = Grid\Enum\Type::PRICE_EURO;
-    protected string             $dhxTypeRo      = Grid\Enum\Type::PRICE_EURO_READONLY;
-    protected string             $sort           = Grid\Enum\Sort::INTEGER;
-    protected string             $align          = Grid\Enum\Align::RIGHT;
-    protected string             $filter         = Grid\Enum\Filter::NUMERIC;
-    protected int                $width          = 100;
-    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
-    private string               $format         = '0,000.00';
+    protected Grid\Enum\Type   $dhxTypeRw = Grid\Enum\Type::PRICE_EURO;
+    protected Grid\Enum\Type   $dhxTypeRo = Grid\Enum\Type::PRICE_EURO_READONLY;
+    protected Grid\Enum\Sort   $sort      = Grid\Enum\Sort::INTEGER;
+    protected Grid\Enum\Align  $align     = Grid\Enum\Align::RIGHT;
+    protected Grid\Enum\Filter $filter    = Grid\Enum\Filter::NUMERIC;
+    protected int              $width     = 100;
+    private string             $format    = '0,000.00';
 
-    public function setCurrency(string $currency): self
+    public function setCurrency(Grid\Enum\Type $currency): self
     {
         $this->dhxTypeRo = $currency;
         $this->dhxTypeRw = $currency;
