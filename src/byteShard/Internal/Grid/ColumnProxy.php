@@ -66,8 +66,6 @@ class ColumnProxy
     private string       $id;
     private Closure      $valueCallback;
     private bool         $cdata;
-    private Filter       $filter;
-    private int          $exportWidth;
 
     // grid-wide settings
     private bool $wrapGridContents;
@@ -137,7 +135,7 @@ class ColumnProxy
             }
         }
 
-        $this->columnDefinition          = $column->getContents();
+        $this->columnDefinition          = $column->getContentsForColumnProxy();
         $this->columnDefinition['label'] = Strings::purify($this->columnDefinition['label']);
         if ($this->columnDefinition['colspan'] === true) {
             $this->columnDefinition['label'] = '#cspan';
@@ -157,18 +155,16 @@ class ColumnProxy
                 $this->rowSelectorIgnoresAccessType = false;
             }
         }
-        $this->filter      = $column->getFilter();
-        $this->exportWidth = $column->getExportWidth();
     }
 
     public function getFilter(): string
     {
-        return $this->filter->value;
+        return $this->columnDefinition['filter']->value;
     }
 
     public function getExportWidth(): array
     {
-        return [$this->encryptedName, $this->exportWidth];
+        return [$this->encryptedName, $this->columnDefinition['exportWidth']];
     }
 
     public function isTreeColumn(): bool
@@ -191,37 +187,39 @@ class ColumnProxy
         return $this->rowSpan;
     }
 
-    public function getColumnDefinition(): array
-    {
-        return $this->columnDefinition;
-    }
-
     public function getCellValue(object $data, string $rowId, array &$localeCache, int $accessType): mixed
     {
-        $value = '';
+        $value       = '';
+        $dataBinding = $this->dataBinding;
         switch ($this->specialType) {
             case self::dateDifference:
-                if (!empty($data->{$this->dateField1}) && !empty($data->{$this->dateField2})) {
+                $field1 = $this->dateField1;
+                $field2 = $this->dateField2;
+                if (!empty($data->$field1) && !empty($data->$field2)) {
                     $value = $this->getDateDifference(
-                        new DateTime($data->{$this->dateField1}, $this->dbTimezone),
-                        new DateTime($data->{$this->dateField2}, $this->dbTimezone)
+                        new DateTime($data->$field1, $this->dbTimezone),
+                        new DateTime($data->$field2, $this->dbTimezone)
                     );
                 }
                 break;
             case self::idReference:
-                $value = $this->idReferences[$data->{$this->dataBinding}] ?? '';
+                $value = $this->idReferences[$data->$dataBinding] ?? '';
                 break;
             case self::image:
-                if (isset($data->{$this->dataBinding}, $this->imageMap[$data->{$this->dataBinding}])) {
-                    $value          = $this->imageMap[$data->{$this->dataBinding}]['value'];
-                    $encryptedValue = $this->imageMap[$data->{$this->dataBinding}]['encryptedValue'] ?? '';
-                    if ($this->imageMap[$data->{$this->dataBinding}]['jsLink'] === true) {
-                        $value .= '^javascript:doOnGridLink("'.$this->cellId.'","'.$rowId.'","'.$this->encryptedName.'","'.$encryptedValue.'")^_self';
+                if (isset($data->$dataBinding)) {
+                    $imageKey = $data->$dataBinding;
+                    if (isset($this->imageMap[$imageKey])) {
+                        $imageData      = $this->imageMap[$imageKey];
+                        $value          = $imageData['value'];
+                        $encryptedValue = $imageData['encryptedValue'] ?? '';
+                        if ($imageData['jsLink'] === true) {
+                            $value .= '^javascript:doOnGridLink("'.$this->cellId.'","'.$rowId.'","'.$this->encryptedName.'","'.$encryptedValue.'")^_self';
+                        }
                     }
                 }
                 break;
             case self::link:
-                $value = $data->{$this->dataBinding} ?? '';
+                $value = $data->$dataBinding ?? '';
                 if ($this->convertDate === true) {
                     $value = $this->getDate($value);
                 } elseif ($value instanceof DateTime) {
@@ -236,27 +234,30 @@ class ColumnProxy
                 }
                 break;
             case self::linkMap:
-                if (isset($data->{$this->dataBinding}, $this->linkMap[$data->{$this->dataBinding}])) {
-                    $map = $this->linkMap[$data->{$this->dataBinding}];
-                    if ($map['js'] === true) {
-                        $value = $map['value'].'^'.$map['tooltip'].'^javascript:doOnGridLink("'.$this->cellId.'","'.$rowId.'","'.$this->encryptedName.'")^_self';
-                    } else {
-                        $value = $map['value'].'^'.$map['tooltip'].'^'.$map['url'].'^'.$map['target'];
+                if (isset($data->$dataBinding)) {
+                    $mapKey = $data->$dataBinding;
+                    if (isset($this->linkMap[$mapKey])) {
+                        $map = $this->linkMap[$mapKey];
+                        if ($map['js'] === true) {
+                            $value = $map['value'].'^'.$map['tooltip'].'^javascript:doOnGridLink("'.$this->cellId.'","'.$rowId.'","'.$this->encryptedName.'")^_self';
+                        } else {
+                            $value = $map['value'].'^'.$map['tooltip'].'^'.$map['url'].'^'.$map['target'];
+                        }
                     }
                 }
                 break;
             case self::valueCallback:
-                $value = ($this->valueCallback)($data->{$this->dataBinding});
+                $value = ($this->valueCallback)($data->$dataBinding);
                 break;
             default:
                 if ($this->columnType === RowSelector::class) {
                     if ($this->hideRowSelectorCheckboxOnReadOnlyRows === true && $accessType < AccessType::READWRITE) {
                         $value = 3;
                     } else {
-                        $value = $data->{$this->dataBinding} ?? 0;
+                        $value = $data->$dataBinding ?? 0;
                     }
                 } else {
-                    $value = $data->{$this->dataBinding} ?? '';
+                    $value = $data->$dataBinding ?? '';
                     if ($this->convertDate === true) {
                         $value = $this->getDate($value);
                     } elseif ($value instanceof DateTime) {
@@ -280,13 +281,11 @@ class ColumnProxy
             }
             $value = $localeCache[$value];
         }
-        switch ($this->columnDefinition['attributes']['type']) {
-            case Type::CHECKBOX:
-            case Type::CHECKBOX_READONLY:
-                if (!is_numeric($value) && !is_bool($value)) {
-                    $value = 0;
-                }
-                break;
+        $colType = $this->columnDefinition['type'];
+        if ($colType === Type::CHECKBOX || $colType === Type::CHECKBOX_READONLY) {
+            if (!is_numeric($value) && !is_bool($value)) {
+                $value = 0;
+            }
         }
         return $value;
     }
@@ -297,7 +296,7 @@ class ColumnProxy
         if ($this->cdata === true) {
             $cell = SimpleXML::addChildCData($row, 'cell', $cellValue);
         } else {
-            $cell = SimpleXML::addChild($row, 'cell', $cellValue, null, true);
+            $cell = $row->addChild('cell', !empty($cellValue) ? htmlspecialchars(htmlspecialchars_decode($cellValue, 16), 16, 'UTF-8') : $cellValue);
         }
         if ($cell !== null) {
             $this->addColumnAttributesToXml($cell, $cellValue, $accessType, $data);
@@ -307,43 +306,35 @@ class ColumnProxy
     private function addColumnAttributesToXml(SimpleXMLElement $cell, mixed $cellValue, int $accessType, object $data): void
     {
         // class
-        $cssClasses = [];
-        if ($this->className !== '') {
-            $cssClasses[] = $this->className;
-        }
-        if ($this->wrapGridContents && $this->wrapText) {
-            $cssClasses[] = 'noWrap';
-        }
-        if (!empty($cssClasses)) {
-            SimpleXML::addAttribute($cell, 'class', implode(' ', $cssClasses), null, true);
+        $class = trim(($this->className !== '' ? htmlspecialchars_decode($this->className).' ' : '').($this->wrapGridContents && $this->wrapText ? 'noWrap' : ''), ' ');
+        if ($class !== '') {
+            $cell->addAttribute('class', $class);
         }
 
         // type
-        $type = null;
-        if ($accessType === 1) {
+        if ($this->columnDefinition['type'] === Type::IMAGE && empty($cellValue)) {
+            $cell->addAttribute('type', Type::TEXT_READONLY->value);
+        } else if ($accessType === 1) {
             if ($this->columnType === RowSelector::class) {
                 if ($this->rowSelectorIgnoresAccessType === false) {
-                    $type = $this->columnDefinition['typeRO'];
+                    $cell->addAttribute('type', $this->columnDefinition['typeRO']->value);
                 }
-            } elseif ($this->columnDefinition['attributes']['type'] !== $this->columnDefinition['typeRO']) {
-                $type = $this->columnDefinition['typeRO'];
+            } elseif ($this->columnDefinition['type'] !== $this->columnDefinition['typeRO']) {
+                $cell->addAttribute('type', $this->columnDefinition['typeRO']->value);
             }
-        }
-        if ($this->columnDefinition['attributes']['type'] === Type::IMAGE && empty($cellValue)) {
-            $type = 'ro';
-        }
-        if (isset($type)) {
-            SimpleXML::addAttribute($cell, 'type', $type, null, true);
         }
 
         // rowspan
-        if (isset($data->{$this->dataBinding.'_SPAN'}) && $data->{$this->dataBinding.'_SPAN'} > 0) {
-            $this->rowSpan = true;
-            if ($this->span === 0) {
-                SimpleXML::addAttribute($cell, 'rowspan', $data->{$this->dataBinding.'_SPAN'}, null, true);
-                $this->span = $data->{$this->dataBinding.'_SPAN'};
+        if (isset($data->{$this->dataBinding.'_SPAN'})) {
+            $span = $data->{$this->dataBinding.'_SPAN'};
+            if (is_numeric($span) && $span > 0) {
+                $this->rowSpan = true;
+                if ($this->span === 0) {
+                    $cell->addAttribute('rowspan', $span);
+                    $this->span = $span;
+                }
+                $this->span--;
             }
-            $this->span--;
         }
 
         //TODO: colspan
@@ -353,10 +344,18 @@ class ColumnProxy
     public function addColumnHeaderToXml(SimpleXMLElement $header): void
     {
         $column = SimpleXML::addChild($header, 'column', $this->columnDefinition['label'], null, true);
-        // add defined attributes to the column
+        // add default attributes to the column
+        $column->addAttribute('align', $this->columnDefinition['align']->value);
+        $column->addAttribute('id', $this->encryptedName);
+        $column->addAttribute('sort', $this->columnDefinition['sort']->value);
+        $column->addAttribute('type', $this->columnDefinition['type']->value);
+        $column->addAttribute('width', $this->columnDefinition['width']);
+
+        // add additional attributes to the column
+        $allowedAttributes = ['color' => true, 'format' => true];
         foreach ($this->columnDefinition['attributes'] as $attributeName => $attributeValue) {
-            if (in_array($attributeName, ['align', 'color', 'format', 'id', 'sort', 'type', 'width'])) {
-                SimpleXML::addAttribute($column, $attributeName, $attributeValue);
+            if (isset($allowedAttributes[$attributeName])) {
+                SimpleXML::addAttribute($column, $attributeName, $attributeValue, null, true);
             }
         }
 
@@ -365,7 +364,7 @@ class ColumnProxy
          * if ($attributeName == "type" && $attributeValue == "tree" && $column['accessType'] == 2){ $this->parameters['beforeInit']['enableTreeCellEdit']=true; }else{ $this->parameters['beforeInit']['enableTreeCellEdit']=false; }
          */
 
-        switch ($this->columnDefinition['attributes']['type']) {
+        switch ($this->columnDefinition['type']) {
             // Ohne Break da auch die combo Attribute zutreffen
             /** @noinspection PhpMissingBreakStatementInspection */
             case Type::COMBO_READONLY:

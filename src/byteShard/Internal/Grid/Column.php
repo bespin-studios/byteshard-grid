@@ -195,7 +195,7 @@ abstract class Column
         return $this;
     }
 
-    public function setAlignment(string $enumAlignment): self
+    public function setAlignment(Align $enumAlignment): self
     {
         $this->align = $enumAlignment;
         return $this;
@@ -227,6 +227,25 @@ abstract class Column
         $result['collapse']            = $this->collapse;
         $result['colspan']             = $this->colspan;
         return $result;
+    }
+
+    public function getContentsForColumnProxy(): array
+    {
+        $accessType = $this->getAccessType();
+        return [
+            'label'       => $this->getLabel(),
+            'accessType'  => $accessType,
+            'typeRO'      => $this->dhxTypeRo,
+            'attributes'  => $this->getTypeSpecificAttributes(),
+            'type'        => $accessType === 2 ? $this->dhxTypeRw : $this->dhxTypeRo,
+            'sort'        => $this->sort,
+            'align'       => $this->align,
+            'width'       => $this->width ?? $this->defaultWidth,
+            'collapse'    => $this->collapse,
+            'colspan'     => $this->colspan,
+            'filter'      => $this->filter,
+            'exportWidth' => $this->exportWidth ?? intdiv($this->width ?? $this->defaultWidth, 5),
+        ];
     }
 
     public function getFilter(): Filter

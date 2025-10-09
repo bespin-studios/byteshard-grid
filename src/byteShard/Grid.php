@@ -799,11 +799,17 @@ abstract class Grid extends CellContent implements GridInterface
             }
             $rowAttributes = $this->getRowAttributes($rowIdPart);
             $localeCache   = [];
+            $treeColumn    = null;
+            foreach ($this->columnProxies as $columnProxy) {
+                if ($columnProxy->isTreeColumn()) {
+                    $treeColumn = $columnProxy;
+                }
+            }
             foreach ($this->inputArray as $key => $val) {
                 // save memory, unset rows as they're processed
                 unset($this->inputArray[$key]);
 
-                $row = new Row($rowIdPart, $nonce, $val, $this->columnProxies, $dataBinding, $rowAccessType, $localeCache, $rowAttributes);
+                $row = new Row($rowIdPart, $nonce, $val, $this->columnProxies, $dataBinding, $rowAccessType, $localeCache, $rowAttributes, $treeColumn);
 
                 $this->outputArray[$row->getEncodedRowId()] = $row;
             }
@@ -830,6 +836,14 @@ abstract class Grid extends CellContent implements GridInterface
                 ];
             }
             $localeCache = [];
+
+            $treeColumn    = null;
+            foreach ($this->columnProxies as $columnProxy) {
+                if ($columnProxy->isTreeColumn()) {
+                    $treeColumn = $columnProxy;
+                }
+            }
+
             //TODO: rowStyles
             foreach ($this->inputArray as $key => $val) {
                 unset($this->inputArray[$key]);
@@ -839,7 +853,7 @@ abstract class Grid extends CellContent implements GridInterface
                     if ($node['visible'] === true && $val->{$node['id']} !== null) {
                         $cryptoRowId[$node['id']] = $val->{$node['id']};
                         if ($previousId[$nodeIndex] !== $val->{$node['id']}) {
-                            $row = new Row($cryptoRowId, $nonce, $val, $this->columnProxies, $node['field'], $node['accessType'], $localeCache, [], $currentLevel);
+                            $row = new Row($cryptoRowId, $nonce, $val, $this->columnProxies, $node['field'], $node['accessType'], $localeCache, [], $treeColumn, $currentLevel);
                             if ($this->expandToLevel > $currentLevel) {
                                 $row->setExpanded();
                             }

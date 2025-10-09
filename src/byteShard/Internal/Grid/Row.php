@@ -3,35 +3,34 @@
 namespace byteShard\Internal\Grid;
 
 use byteShard\ID\RowID;
-use byteShard\Internal\SimpleXML;
 use SimpleXMLElement;
 
 class Row
 {
-    private array        $userData   = [];
-    private string       $encodedRowId;
-    private string       $encryptedRowId;
-    private int          $accessType;
-    private bool         $selected   = false;
-    private bool         $expanded   = false;
-    private string       $style      = '';
-    private string       $class      = '';
-    private ?ColumnProxy $treeColumn = null;
+    private array  $userData = [];
+    private string $encodedRowId;
+    private string $encryptedRowId;
+    private int    $accessType;
+    private bool   $selected = false;
+    private bool   $expanded = false;
+    private string $style    = '';
+    private string $class    = '';
 
     /**
      * @param array<string> $rowIdParts
      * @param array<ColumnProxy> $columnProxies
      */
     public function __construct(
-        array                   $rowIdParts,
-        string                  $nonce,
-        private readonly object $record,
-        private readonly array  $columnProxies,
-        private readonly string $dataBinding,
-        int                     $accessType,
-        private array           &$localeCache,
-        private array           $rowAttributes,
-        private readonly int    $level = 1)
+        array                         $rowIdParts,
+        string                        $nonce,
+        private readonly object       $record,
+        private readonly array        $columnProxies,
+        private readonly string       $dataBinding,
+        int                           $accessType,
+        private array                 &$localeCache,
+        private readonly array        $rowAttributes,
+        private readonly ?ColumnProxy $treeColumn,
+        private readonly int          $level = 1)
     {
         $rowIdArray = [];
         foreach ($rowIdParts as $rowIdIndex) {
@@ -47,12 +46,6 @@ class Row
             }
             if (isset($this->rowAttributes[$this->encodedRowId]['class'])) {
                 $this->class = $this->rowAttributes[$this->encodedRowId]['class'];
-            }
-        }
-        foreach ($this->columnProxies as $columnProxy) {
-            if ($columnProxy->isTreeColumn()) {
-                $this->treeColumn = $columnProxy;
-                break;
             }
         }
     }
@@ -94,9 +87,7 @@ class Row
         }
         $result = [];
 
-        if ($this->treeColumn !== null) {
-            $this->treeColumn->setDataBinding($this->dataBinding);
-        }
+        $this->treeColumn?->setDataBinding($this->dataBinding);
 
         foreach ($this->columnProxies as $columnProxy) {
             $result[$columnProxy->encryptedName] = $columnProxy->getCellValue($this->record, $this->encryptedRowId, $this->localeCache, $this->accessType);
@@ -136,15 +127,22 @@ class Row
 
         // past implementation: ['exportColor'] = 0
         foreach ($this->userData as $name => $value) {
-            $userData = SimpleXML::addChild($row, 'userdata', $value, null, true);
+            if (!empty($value)) {
+                $value = htmlspecialchars(htmlspecialchars_decode($value, 16), 16, 'UTF-8');
+            }
+            $userData = $row->addChild('userData', $value);
             if ($userData !== null) {
-                SimpleXML::addAttribute($userData, 'name', $name, null, true);
+                if ($name === null) {
+                    $name = '';
+                }
+                if ($name !== '') {
+                    $name = htmlspecialchars_decode($name);
+                }
+                $userData->addAttribute('name', $name);
             }
         }
 
-        if ($this->treeColumn !== null) {
-            $this->treeColumn->setDataBinding($this->dataBinding);
-        }
+        $this->treeColumn?->setDataBinding($this->dataBinding);
 
         foreach ($this->columnProxies as $columnProxy) {
             $columnProxy->addColumnToXml($row, $this->record, $this->encryptedRowId, $this->localeCache, $this->accessType);
