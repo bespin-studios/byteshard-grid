@@ -48,14 +48,16 @@ class AddRow extends Action
             $contentClass = $cell->getContentClass();
             $grid         = new $contentClass($cell);
             if ($grid instanceof Grid) {
-                foreach ($grid->getRows($this->values) as $row) {
-                    $data['columns'] = [];
-                    foreach ($row['columns'] as $columnId => $column) {
-                        $data['columns'][$columnId] = $column['value'];
+                $rowsToAdd = [];
+                foreach ($grid->getRows($this->values) as $rowObject) {
+                    [$rowId, $columns] = $rowObject->getColumns();
+                    if ($rowId !== null) {
+                        $rowsToAdd[$rowId]            = $data;
+                        $rowsToAdd[$rowId]['columns'] = $columns;
                     }
-                    if (!empty($data['columns'])) {
-                        $action['LCell'][$cell->containerId()][$cell->cellId()]['addRow'][$row['row']['attr']['id']] = $data;
-                    }
+                }
+                if (!empty($rowsToAdd)) {
+                    $action['LCell'][$cell->containerId()][$cell->cellId()]['addRow'] = $rowsToAdd;
                 }
             }
         }

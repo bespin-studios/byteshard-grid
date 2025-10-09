@@ -5,15 +5,14 @@
  */
 
 namespace byteShard\Grid\Enum;
-use byteShard\Enum;
 
 /**
  * Class Align
  * @package byteShard\Grid\Enum
  */
-final class Align extends Enum\Enum
+enum Align: string
 {
-    const LEFT   = 'left';
-    const CENTER = 'center';
-    const RIGHT  = 'right';
+    case LEFT = 'left';
+    case CENTER = 'center';
+    case RIGHT = 'right';
 }

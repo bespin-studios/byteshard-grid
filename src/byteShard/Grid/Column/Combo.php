@@ -6,7 +6,6 @@
 
 namespace byteShard\Grid\Column;
 
-use byteShard\Enum;
 use byteShard\Grid;
 use byteShard\Internal\Grid\Column;
 use byteShard\Internal\Grid\IDReference;
@@ -17,26 +16,24 @@ use byteShard\Internal\Grid\IDReference;
  */
 class Combo extends Column implements IDReference
 {
-    protected string             $type           = 'combo';
-    protected string             $dhxTypeRw      = Grid\Enum\Type::COMBO;
-    protected string             $dhxTypeRo      = Grid\Enum\Type::COMBO_READONLY;
-    protected string             $sort           = Grid\Enum\Sort::STRING;
-    protected string             $align          = Grid\Enum\Align::LEFT;
-    protected string             $filter         = Grid\Enum\Filter::COMBO_ADVANCED;
-    protected int                $width          = 100;
-    protected array              $comboOptions   = [];
-    private \byteShard\Combo     $combo;
-    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
-    public array                 $idReferences   = [];
+    protected Grid\Enum\Type   $dhxTypeRw    = Grid\Enum\Type::COMBO;
+    protected Grid\Enum\Type   $dhxTypeRo    = Grid\Enum\Type::COMBO_READONLY;
+    protected Grid\Enum\Sort   $sort         = Grid\Enum\Sort::STRING;
+    protected Grid\Enum\Align  $align        = Grid\Enum\Align::LEFT;
+    protected Grid\Enum\Filter $filter       = Grid\Enum\Filter::COMBO_ADVANCED;
+    protected int              $width        = 100;
+    protected array            $comboOptions = [];
+    private \byteShard\Combo   $combo;
+    public array               $idReferences = [];
 
     /**
      * Combo constructor.
-     * @param string                 $id
-     * @param string|null            $label
+     * @param string $id
+     * @param string|null $label
      * @param array|\byteShard\Combo $options
-     * @param int|null               $width
-     * @param int                    $accessType
-     * @param string|null            $dataBinding
+     * @param int|null $width
+     * @param int $accessType
+     * @param string|null $dataBinding
      */
     public function __construct(string $id, ?string $label = null, array|\byteShard\Combo $options = [], ?int $width = null, int $accessType = 1, ?string $dataBinding = null)
     {

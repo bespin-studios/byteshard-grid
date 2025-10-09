@@ -6,7 +6,6 @@
 
 namespace byteShard\Grid\Column;
 
-use byteShard\Enum;
 use byteShard\Grid;
 use byteShard\Internal\Grid\Column;
 
@@ -16,14 +15,12 @@ use byteShard\Internal\Grid\Column;
  */
 class Tree extends Column
 {
-    protected string             $type           = 'tree';
-    protected string             $dhxTypeRw      = Grid\Enum\Type::TREE;
-    protected string             $dhxTypeRo      = Grid\Enum\Type::TREE;
-    protected string             $sort           = Grid\Enum\Sort::STRING;
-    protected string             $align          = Grid\Enum\Align::LEFT;
-    protected string             $filter         = Grid\Enum\Filter::TEXT_ADVANCED;
-    protected int                $width          = 100;
-    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
+    protected Grid\Enum\Type   $dhxTypeRw = Grid\Enum\Type::TREE;
+    protected Grid\Enum\Type   $dhxTypeRo = Grid\Enum\Type::TREE;
+    protected Grid\Enum\Sort   $sort      = Grid\Enum\Sort::STRING;
+    protected Grid\Enum\Align  $align     = Grid\Enum\Align::LEFT;
+    protected Grid\Enum\Filter $filter    = Grid\Enum\Filter::TEXT_ADVANCED;
+    protected int              $width     = 100;
 
     public function __construct(?string $label = null, ?int $width = null, int $accessType = 1, ?string $dataBinding = null)
     {

@@ -8,8 +8,10 @@ namespace byteShard\Internal\Grid;
 
 use byteShard\Enum;
 use byteShard\Enum\Access;
-use byteShard\Grid\Column\RowSelector;
+use byteShard\Grid\Enum\Align;
+use byteShard\Grid\Enum\Filter;
 use byteShard\Grid\Enum\Sort;
+use byteShard\Grid\Enum\Type;
 use byteShard\Internal\Event\Event;
 use byteShard\Internal\Validation\Validation;
 use byteShard\Locale;
@@ -36,22 +38,18 @@ abstract class Column
     public string $dateField2             = '';
 
     protected ?string $name;
-
-    protected string $type;
-    protected string $dhxTypeRw;
-    protected string $dhxTypeRo;
-    protected string $filter;
-    protected int    $width;
-    protected int    $defaultWidth = 100;
-    private int      $exportWidth;
-    protected string $align;
-    protected string $sort;
-    protected int    $collapse     = 0;
-    public bool      $multiline    = true;
-    protected bool   $colspan      = false;
-    private bool     $cdata        = false;
-
-    protected Enum\DB\ColumnType $db_column_type = Enum\DB\ColumnType::VARCHAR;
+    protected Type    $dhxTypeRw;
+    protected Type    $dhxTypeRo;
+    protected Filter  $filter;
+    protected int     $width;
+    protected int     $defaultWidth = 100;
+    private int       $exportWidth;
+    protected Align   $align;
+    protected Sort    $sort;
+    protected int     $collapse     = 0;
+    public bool       $multiline    = true;
+    protected bool    $colspan      = false;
+    private bool      $cdata        = false;
     /** @var Event[] */
     private array   $events          = [];
     private string  $localeBaseToken = '';
@@ -62,10 +60,10 @@ abstract class Column
 
     /**
      * Column constructor.
-     * @param string      $id
+     * @param string $id
      * @param null|string $label
-     * @param null|int    $width
-     * @param int|Access  $accessType
+     * @param null|int $width
+     * @param int|Access $accessType
      * @param null|string $dataBinding if dataBinding is null, it will be mapped to the id
      */
     public function __construct(string $id, ?string $label = null, ?int $width = null, int|Enum\Access $accessType = Enum\AccessType::R, ?string $dataBinding = null)
@@ -119,15 +117,13 @@ abstract class Column
      */
     public function setDBColumnType(Enum\DB\ColumnType $enumDbColumnType): self
     {
-        $this->db_column_type = $enumDbColumnType;
+        trigger_error(__METHOD__.': is deprecated and has no more impact. Calls can be safely removed', E_USER_DEPRECATED);
         return $this;
     }
 
-    public function setSort(string $enumSort): self
+    public function setSort(Sort $enumSort): self
     {
-        if (Sort::is_enum($enumSort)) {
-            $this->sort = $enumSort;
-        }
+        $this->sort = $enumSort;
         return $this;
     }
 
@@ -153,7 +149,7 @@ abstract class Column
         return $this->events;
     }
 
-    public function setFilter(string $filter): self
+    public function setFilter(Filter $filter): self
     {
         $this->filter = $filter;
         return $this;
@@ -220,20 +216,33 @@ abstract class Column
      */
     public function getColumnContent(): array
     {
-        $result['label']                   = $this->getLabel();
-        $result['accessType']              = $this->getAccessType();
-        $result['attributes']              = $this->getTypeSpecificAttributes();
-        $result['attributes']['type']      = ($result['accessType'] === 2) ? $this->dhxTypeRw : $this->dhxTypeRo;
-        $result['attributes']['typeRO']    = $this->dhxTypeRo;
-        $result['attributes']['sort']      = $this->sort;
-        $result['attributes']['align']     = $this->align;
-        $result['attributes']['filter']    = $this->filter;
-        $result['attributes']['width']     = $this->width ?? $this->defaultWidth;
-        $result['attributes']['width_xls'] = $this->exportWidth ?? $result['attributes']['width'] / 5;
-        $result['attributes']['masterchk'] = get_called_class() === RowSelector::class;
-        $result['collapse']                = $this->collapse;
-        $result['colspan']                 = $this->colspan;
+        $result['label']               = $this->getLabel();
+        $result['accessType']          = $this->getAccessType();
+        $result['typeRO']              = $this->dhxTypeRo->value;
+        $result['attributes']          = $this->getTypeSpecificAttributes();
+        $result['attributes']['type']  = ($result['accessType'] === 2) ? $this->dhxTypeRw->value : $this->dhxTypeRo->value;
+        $result['attributes']['sort']  = $this->sort->value;
+        $result['attributes']['align'] = $this->align->value;
+        $result['attributes']['width'] = $this->width ?? $this->defaultWidth;
+        $result['collapse']            = $this->collapse;
+        $result['colspan']             = $this->colspan;
         return $result;
+    }
+
+    public function getFilter(): Filter
+    {
+        return $this->filter;
+    }
+
+    public function getExportWidth(): int
+    {
+        if (isset($this->exportWidth)) {
+            return $this->exportWidth;
+        }
+        if (isset($this->width)) {
+            return intdiv($this->width, 5);
+        }
+        return intdiv($this->defaultWidth, 5);
     }
 
     protected function getTypeSpecificAttributes(): array
@@ -262,9 +271,9 @@ abstract class Column
     public function getType(): string
     {
         if ($this->getAccessType() === Enum\AccessType::RW) {
-            return $this->dhxTypeRw;
+            return $this->dhxTypeRw->value;
         }
-        return $this->dhxTypeRo;
+        return $this->dhxTypeRo->value;
     }
 
     /**
@@ -299,12 +308,8 @@ abstract class Column
      */
     public function getDBColumnType(): string
     {
-        /*if ($this->db_column_type === '') {
-            // TODO: get default db column type from appSettings instead of session
-            trigger_error(__METHOD__.': empty db_column_type is deprecated.', E_USER_DEPRECATED);
-            return $_SESSION[MAIN]->getDefaultDBColumnType('grid', $this->type);
-        }*/
-        return $this->db_column_type->value;
+        trigger_error(__METHOD__.': is deprecated and has no more impact. Calls can be safely removed', E_USER_DEPRECATED);
+        return '';
     }
 
     /**
@@ -335,8 +340,8 @@ abstract class Column
      */
     public function getDateTimeDBFormat(): string
     {
-        trigger_error(__METHOD__.': is deprecated.', E_USER_DEPRECATED);
-        return $_SESSION[MAIN]->getDateTimeFormat($this->getDBColumnType());
+        trigger_error(__METHOD__.': is deprecated and has no more impact. Calls can be safely removed', E_USER_DEPRECATED);
+        return '';
     }
 
     /**

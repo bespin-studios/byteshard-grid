@@ -5,20 +5,19 @@
  */
 
 namespace byteShard\Grid\Enum;
-use byteShard\Enum;
 
 /**
  * Class Filter
  * @package byteShard\Grid\Enum
  */
-final class Filter extends Enum\Enum
+enum Filter: string
 {
-    const TEXT_ADVANCED  = '#text_filter_adv';
-    const TEXT           = '#text_filter';
-    const DATE           = '#date_filter';
-    const CHECKBOX       = '#checkbox_filter';
-    const COMBO_ADVANCED = '#chkcombo_filter';
-    const NUMERIC        = '#numeric_filter';
-    const LINK           = '#link_filter';
-    const TRISTATE       = '#tricheckbox_filter';
+    case TEXT_ADVANCED = '#text_filter_adv';
+    case TEXT = '#text_filter';
+    case DATE = '#date_filter';
+    case CHECKBOX = '#checkbox_filter';
+    case COMBO_ADVANCED = '#chkcombo_filter';
+    case NUMERIC = '#numeric_filter';
+    case LINK = '#link_filter';
+    case TRISTATE = '#tricheckbox_filter';
 }
