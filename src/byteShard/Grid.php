@@ -158,7 +158,12 @@ abstract class Grid extends CellContent implements GridInterface
                             }
                         }
                         if (!empty($actions)) {
-                            $result = array_merge_recursive(Action::getClientResponse($this->cell, null, ...$actions));
+                            $merge_array = [];
+                            foreach ($actions as $action) {
+                                $merge_array[] = $action->getResult($this->cell, null);
+                            }
+                            $result = array_merge_recursive([], ...$merge_array);
+                            $result['state'] = array_key_exists('state', $result) ? is_array($result['state']) ? min(2, min($result['state'])) : $result['state'] : 2;
                         }
 
                         if (array_key_exists('success', $result)) {
