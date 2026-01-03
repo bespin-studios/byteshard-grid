@@ -1,3 +1,10 @@
+## [2.6.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.0...v2.6.1) (2026-01-03)
+
+
+### Bug Fixes
+
+* remove deprecated method call ([917f447](https://github.com/bespin-studios/byteshard-grid/commit/917f4475cdb75fc11650f6735610fd3b998abfee))
+
 # [2.6.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.5.1...v2.6.0) (2025-10-09)
 
 
