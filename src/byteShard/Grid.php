@@ -520,7 +520,6 @@ abstract class Grid extends CellContent implements GridInterface
             if ($event instanceof OnDrop) {
                 $this->eventOnDrop = true;
             }
-            $this->cell->registerContentEvent($event);
         }
         $cellEvents = $this->getParentEventsForClient();
         $cellEvents = $this->addImplicitEvents($cellEvents);
