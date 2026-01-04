@@ -1,3 +1,10 @@
+## [2.6.2](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.1...v2.6.2) (2026-01-04)
+
+
+### Bug Fixes
+
+* remove unused legacy action ([38bb005](https://github.com/bespin-studios/byteshard-grid/commit/38bb005cf6532ca62076f08b28bd2409c7145785))
+
 ## [2.6.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.0...v2.6.1) (2026-01-03)
 
 
