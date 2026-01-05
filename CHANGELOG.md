@@ -1,3 +1,10 @@
+## [2.6.4](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.3...v2.6.4) (2026-01-05)
+
+
+### Bug Fixes
+
+* remove legacy event registration in session ([5831c9c](https://github.com/bespin-studios/byteshard-grid/commit/5831c9c37ff3e0a3836880729a91d88f30210ab0))
+
 ## [2.6.3](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.2...v2.6.3) (2026-01-04)
 
 
