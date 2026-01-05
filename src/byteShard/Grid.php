@@ -360,13 +360,6 @@ abstract class Grid extends CellContent implements GridInterface
                 $column->getEncryptedName($nonce);
 
                 $this->columnValidations[] = $column->getClientValidations();
-                foreach ($events as $event) {
-                    $actions = $event->getActionArray();
-                    foreach ($actions as $action) {
-                        $action->initActionInCell($this->cell);
-                    }
-                    $this->cell->setEventForInteractiveObject($column->encryptedName, $event);
-                }
 
                 if ($columnAccessType === AccessType::RW) {
                     if (($column instanceof Grid\Column\Checkbox) || ($column instanceof Grid\Column\Radio) || ($column instanceof Grid\Column\RadioRow)) {

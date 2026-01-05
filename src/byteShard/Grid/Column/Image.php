@@ -73,11 +73,6 @@ class Image extends Column implements EncryptedObjectValueInterface
                 $eventId = $cell->getEventIDForInteractiveObject($this->getId().':'.$image->value, false);
                 if ($eventId['registered'] === false) {
                     foreach ($events as $event) {
-                        $actions = $event->getActionArray();
-                        foreach ($actions as $action) {
-                            $action->initActionInCell($cell);
-                        }
-                        $cell->setEventForInteractiveObject($eventId['name'], $event);
                         if ($event instanceof Grid\Event\OnLinkClick) {
                             $jsLink = true;
                         }
