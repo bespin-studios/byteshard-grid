@@ -848,7 +848,7 @@ abstract class Grid extends CellContent implements GridInterface
                 $currentLevel = 1;
                 foreach ($nodes as $nodeIndex => $node) {
                     if ($node['visible'] === true && $val->{$node['id']} !== null) {
-                        $cryptoRowId[$node['id']] = $val->{$node['id']};
+                        $cryptoRowId[] = $node['id'];
                         if ($previousId[$nodeIndex] !== $val->{$node['id']}) {
                             $row = new Row($cryptoRowId, $nonce, $val, $this->columnProxies, $node['field'], $node['accessType'], $localeCache, [], $treeColumn, $currentLevel);
                             if ($this->expandToLevel > $currentLevel) {
@@ -860,7 +860,7 @@ abstract class Grid extends CellContent implements GridInterface
                         }
                         $currentLevel++;
                     } elseif ($node['useId'] === true && $val->{$node['id']} !== null) {
-                        $cryptoRowId[$node['id']] = $val->{$node['id']};
+                        $cryptoRowId[] = $node['id'];
                     }
                 }
             }
