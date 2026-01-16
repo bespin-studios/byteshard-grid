@@ -6,6 +6,7 @@ use byteShard\Cell;
 use byteShard\Grid;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
+use byteShard\Internal\ContentClassFactory;
 
 class AddRow extends Action
 {
@@ -26,7 +27,6 @@ class AddRow extends Action
         private readonly string $style = ''
     )
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
     }
 
@@ -46,7 +46,7 @@ class AddRow extends Action
         }
         foreach ($cells as $cell) {
             $contentClass = $cell->getContentClass();
-            $grid         = new $contentClass($cell);
+            $grid         = ContentClassFactory::cellContent($contentClass, '', $cell);
             if ($grid instanceof Grid) {
                 $rowsToAdd = [];
                 foreach ($grid->getRows($this->values) as $rowObject) {
@@ -57,7 +57,7 @@ class AddRow extends Action
                     }
                 }
                 if (!empty($rowsToAdd)) {
-                    $action['LCell'][$cell->containerId()][$cell->cellId()]['addRow'] = $rowsToAdd;
+                    $action[Action\ActionTargetEnum::Cell->value][$cell->containerId()][$cell->cellId()]['addRow'] = $rowsToAdd;
                 }
             }
         }

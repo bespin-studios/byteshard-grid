@@ -6,9 +6,13 @@
 
 namespace byteShard;
 
+use byteShard\Action\Grid\SaveGridData;
 use byteShard\Cell\Event\OnPoll;
 use byteShard\Enum\AccessType;
 use byteShard\Enum\ContentType;
+use byteShard\Event\CellActions;
+use byteShard\Event\EventResult;
+use byteShard\Event\OnCellEditInterface;
 use byteShard\Event\OnPollInterface;
 use byteShard\Event\OnSelectInterface;
 use byteShard\Grid\Column\RowSelector;
@@ -49,7 +53,7 @@ use byteShard\Internal\Deeplink\Deeplink;
  * Class Grid
  * @package byteShard
  */
-abstract class Grid extends CellContent implements GridInterface
+abstract class Grid extends CellContent implements GridInterface, OnCellEditInterface
 {
     /**
      * columns passed by defineCellContent
@@ -118,88 +122,9 @@ abstract class Grid extends CellContent implements GridInterface
     private array   $rowClasses = [];
     private ?string $pollId     = null;
 
-
-    public function newRunClientGridUpdate(ClientDataInterface $clientData): array
+    public function onCellEdit(): EventResult
     {
-        //TODO: refactor like SaveFormMessage
-        $result['state'] = 1;
-        if ($this->getAccessType() === Enum\AccessType::RW) {
-            if (method_exists($this, 'defineUpdate')) {
-                if ($clientData instanceof ValidationFailed) {
-                    // validation failed, create message popup from the failed messages
-                    $message = [];
-                    /* @var Object[] $clientData */
-                    foreach ($clientData->failedValidationsDataArray as $val) {
-                        if (isset($val['failedRules']) && is_array($val['failedRules'])) {
-                            foreach ($val['failedRules'] as $failure_message) {
-                                $message[] = $failure_message;
-                            }
-                        }
-                    }
-                    if (count($message) === 0) {
-                        $message[] = Locale::get('byteShard.cellContent.no_failed_validation_messages');
-                    }
-                    $msg = new Message();
-                    $msg->setMessage($message);
-                    return $msg->getNavigationArray();
-                }
-
-                if ($clientData instanceof ClientData || $clientData instanceof GetData) {
-                    // validation ok, set validated data as clientData and run method defineUpdate which needs to be defined in the respective cell
-                    $this->clientData = $clientData;
-                    $result           = $this->defineUpdate();
-                    if (is_array($result)) {
-                        $actions = [];
-                        foreach ($result as $key => $item) {
-                            if ($item instanceof \byteShard\Internal\Action) {
-                                $item->setClientTimeZone($this->getClientTimeZone());
-                                $actions[] = $item;
-                                unset($result[$key]);
-                            }
-                        }
-                        if (!empty($actions)) {
-                            $merge_array = [];
-                            foreach ($actions as $action) {
-                                $merge_array[] = $action->getResult($this->cell, null);
-                            }
-                            $result = array_merge_recursive([], ...$merge_array);
-                            $result['state'] = array_key_exists('state', $result) ? is_array($result['state']) ? min(2, min($result['state'])) : $result['state'] : 2;
-                        }
-
-                        if (array_key_exists('success', $result)) {
-                            unset($result['success']);
-                        }
-                        if (array_key_exists('changes', $result)) {
-                            unset($result['changes']);
-                        }
-                    } elseif ($result instanceof \byteShard\Internal\Action) {
-                        $result = Action::getClientResponse($this->cell, null, $result);
-                    } else {
-                        $msg = new Message(Locale::get('byteShard.cellContent.unexpected_return_value'));
-                        return $msg->getNavigationArray();
-                    }
-                } else {
-                    // $clientData is neither of type Struct\ClientData nor Struct\ValidationFailed
-                    $msg = new Message(Locale::get('byteShard.cellContent.unexpected_client_data'));
-                    return $msg->getNavigationArray();
-                }
-            } else {
-                $msg = new Message(Locale::get('byteShard.cellContent.undefined_method'));
-                return $msg->getNavigationArray();
-            }
-        } else {
-            $msg = new Message(Locale::get('byteShard.cellContent.permission'));
-            return $msg->getNavigationArray();
-        }
-        if (is_array($result) && array_key_exists('state', $result) && is_array($result['state'])) {
-            $result['state'] = min(...$result['state']);
-        }
-        if ($result === null || !isset($result['state']) || $result['state'] !== 2) {
-            $msg             = new Message(Locale::get('byteShard.cellContent.generic'));
-            $result          = $msg->getNavigationArray();
-            $result['state'] = 2;
-        }
-        return $result;
+        return new EventResult(new CellActions(new SaveGridData()));
     }
 
     /**
@@ -848,7 +773,7 @@ abstract class Grid extends CellContent implements GridInterface
                 $currentLevel = 1;
                 foreach ($nodes as $nodeIndex => $node) {
                     if ($node['visible'] === true && $val->{$node['id']} !== null) {
-                        $cryptoRowId[$node['id']] = $val->{$node['id']};
+                        $cryptoRowId[] = $node['id'];
                         if ($previousId[$nodeIndex] !== $val->{$node['id']}) {
                             $row = new Row($cryptoRowId, $nonce, $val, $this->columnProxies, $node['field'], $node['accessType'], $localeCache, [], $treeColumn, $currentLevel);
                             if ($this->expandToLevel > $currentLevel) {
@@ -860,7 +785,7 @@ abstract class Grid extends CellContent implements GridInterface
                         }
                         $currentLevel++;
                     } elseif ($node['useId'] === true && $val->{$node['id']} !== null) {
-                        $cryptoRowId[$node['id']] = $val->{$node['id']};
+                        $cryptoRowId[] = $node['id'];
                     }
                 }
             }

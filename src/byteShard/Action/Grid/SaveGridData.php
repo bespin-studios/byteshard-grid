@@ -1,0 +1,77 @@
+<?php
+
+namespace byteShard\Action\Grid;
+
+use byteShard\Enum\AccessType;
+use byteShard\Enum\HttpResponseState;
+use byteShard\Grid;
+use byteShard\Internal\Action;
+use byteShard\Internal\Action\ActionResultInterface;
+use byteShard\Internal\CellContent;
+use byteShard\Locale;
+use byteShard\Popup\Message;
+
+class SaveGridData extends Action
+{
+
+    protected function runAction(): ActionResultInterface
+    {
+        $result      = ['state' => HttpResponseState::SUCCESS->value];
+        $cellContent = $this->getActionInitDTO()->eventContainer;
+        if ($cellContent instanceof CellContent) {
+            if ($cellContent->getAccessType() !== AccessType::RW) {
+                return $this->getErrorPopup($cellContent);
+            }
+
+            $result = $cellContent->runClientUpdate();
+
+            if ($result === null) {
+                return $this->getErrorPopup($cellContent, 'byteShard.cellContent.unexpected_return_value');
+            }
+
+            $actions       = [];
+            $actionInitDTO = $this->getActionInitDTO();
+            if ($actionInitDTO !== null) {
+                foreach ($result as $key => $item) {
+                    if ($item instanceof Action) {
+                        $actions[] = $item->initializeAction($actionInitDTO);
+                        unset($result[$key]);
+                    }
+                }
+            }
+            if (!empty($actions)) {
+                foreach ($actions as $action) {
+                    $result = array_merge_recursive($result, $action->getResult());
+                }
+            }
+            if (array_key_exists('success', $result)) {
+                unset($result['success']);
+            }
+            if (array_key_exists('changes', $result)) {
+                unset($result['changes']);
+            }
+            if (array_key_exists('state', $result) && is_array($result['state'])) {
+                $result['state'] = min(...$result['state']);
+            }
+            if (is_array($result) && empty($result)) {
+                return new Action\ActionResult();
+            }
+            if (!isset($result['state']) || $result['state'] !== 2) {
+                return $this->getErrorPopup($cellContent, 'byteShard.cellContent.generic');
+            }
+        }
+        return new Action\ActionResultMigrationHelper($result);
+    }
+
+    private function getErrorPopup(CellContent $cellContent, string $locale = ''): ActionResultInterface
+    {
+        if ($locale === '') {
+            $locale = 'byteShard.cell.update.no_permission';
+            if ($cellContent instanceof Grid) {
+                $locale = 'byteShard.grid.update.no_permission';
+            }
+        }
+        $message = new Message(Locale::get($locale));
+        return new Action\ActionResultMigrationHelper($message->getNavigationArray());
+    }
+}

@@ -7,6 +7,7 @@
 namespace byteShard\Action\Grid;
 
 use byteShard\Cell;
+use byteShard\Enum\HttpResponseState;
 use byteShard\ID\RowID;
 use byteShard\Internal\Action;
 use byteShard\Internal\Action\ActionResultInterface;
@@ -22,7 +23,6 @@ class SetCellValue extends Action
 
     public function __construct(string $cell)
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
     }
 
@@ -56,7 +56,7 @@ class SetCellValue extends Action
 
     protected function runAction(): ActionResultInterface
     {
-        $result = ['state' => 2];
+        $result = ['state' => HttpResponseState::SUCCESS->value];
         if (!empty($this->newValues)) {
             $cells = $this->getCells([$this->cell]);
             foreach ($cells as $cell) {
@@ -67,7 +67,7 @@ class SetCellValue extends Action
                         $data['column']->setLocaleBaseToken($cell->createLocaleBaseToken('Cell').'.Grid.');
                         $columnId = $data['column']->getEncryptedName($cellNonce);
 
-                        $result['LCell'][$cell->containerId()][$cell->cellId()]['updateGridData'][$encryptedRowId]['columns'][$columnId]['value'] = $data['newValue'];
+                        $result[Action\ActionTargetEnum::Cell->value][$cell->containerId()][$cell->cellId()]['updateGridData'][$encryptedRowId]['columns'][$columnId]['value'] = $data['newValue'];
                     }
                 }
             }

@@ -23,7 +23,6 @@ class SetRowTextStyle extends Action
 
     public function __construct(string $cell, string $style, ...$rowIds)
     {
-        parent::__construct();
         $this->cell  = Cell::getContentCellName($cell);
         $this->style = $style;
         foreach ($rowIds as $rowId) {
@@ -39,11 +38,11 @@ class SetRowTextStyle extends Action
             if (empty($this->rowIds)) {
                 $selectedId = $cell->getSelectedId()?->getIds();
                 if (!empty($selectedId)) {
-                    $action['LCell'][$cell->containerId()][$cell->cellId()]['modifyRows'][RowID::encrypt($selectedId, $cell->getNonce())]['setRowTextStyle'] = $this->style;
+                    $action[Action\ActionTargetEnum::Cell->value][$cell->containerId()][$cell->cellId()]['modifyRows'][RowID::encrypt($selectedId, $cell->getNonce())]['setRowTextStyle'] = $this->style;
                 }
             } else {
                 foreach ($this->rowIds as $rowId) {
-                    $action['LCell'][$cell->containerId()][$cell->cellId()]['modifyRows'][$rowId->getEncryptedRowId($cell->getNonce())]['setRowTextStyle'] = $this->style;
+                    $action[Action\ActionTargetEnum::Cell->value][$cell->containerId()][$cell->cellId()]['modifyRows'][$rowId->getEncryptedRowId($cell->getNonce())]['setRowTextStyle'] = $this->style;
                 }
             }
         }

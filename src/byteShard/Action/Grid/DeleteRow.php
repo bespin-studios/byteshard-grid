@@ -22,7 +22,6 @@ class DeleteRow extends Action
 
     public function __construct(string $cell, array ...$rowIds)
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
         foreach ($rowIds as $rowId) {
             $this->rowIds[] = new RowID($rowId);
@@ -38,11 +37,11 @@ class DeleteRow extends Action
             if (empty($this->rowIds)) {
                 $selectedId = $cell->getSelectedId()?->getIds();
                 if (!empty($selectedId)) {
-                    $action['LCell'][$cell->containerId()][$cell->cellId()]['modifyRows'][RowID::encrypt($selectedId, $cellNonce)] = 'deleteRow';
+                    $action[Action\ActionTargetEnum::Cell->value][$cell->containerId()][$cell->cellId()]['modifyRows'][RowID::encrypt($selectedId, $cellNonce)] = 'deleteRow';
                 }
             } else {
                 foreach ($this->rowIds as $rowId) {
-                    $action['LCell'][$cell->containerId()][$cell->cellId()]['modifyRows'][$rowId->getEncryptedRowId($cellNonce)] = 'deleteRow';
+                    $action[Action\ActionTargetEnum::Cell->value][$cell->containerId()][$cell->cellId()]['modifyRows'][$rowId->getEncryptedRowId($cellNonce)] = 'deleteRow';
                 }
             }
         }
