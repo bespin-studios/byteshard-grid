@@ -1,3 +1,12 @@
+## [2.6.5](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.4...v2.6.5) (2026-01-16)
+
+
+### Bug Fixes
+
+* fixes for actions. New action based implementation of save grid data ([0c73b5b](https://github.com/bespin-studios/byteshard-grid/commit/0c73b5bb96d9c1c2ca5e0c3dab568707d2bdbe5b))
+* incorrect row id for tree grids ([40a3c7d](https://github.com/bespin-studios/byteshard-grid/commit/40a3c7d3bc714f061dc94d9faf69936acae1f8ca))
+* upgrade contracts to satisfy grid interface changes ([2c3c366](https://github.com/bespin-studios/byteshard-grid/commit/2c3c3663450b9157a4fbdc29285ab99f24ca906e))
+
 ## [2.6.4](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.3...v2.6.4) (2026-01-05)
 
 
