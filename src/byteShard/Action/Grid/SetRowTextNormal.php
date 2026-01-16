@@ -22,7 +22,6 @@ class SetRowTextNormal extends Action
 
     public function __construct(string $cell, array ...$rowIds)
     {
-        parent::__construct();
         $this->cell = Cell::getContentCellName($cell);
         foreach ($rowIds as $rowId) {
             $this->rowIds[] = new RowID($rowId);
@@ -37,11 +36,11 @@ class SetRowTextNormal extends Action
             if (empty($this->rowIds)) {
                 $selectedId = $cell->getSelectedId()?->getIds();
                 if (!empty($selectedId)) {
-                    $action['LCell'][$cell->containerId()][$cell->cellId()]['modifyRows'][RowID::encrypt($selectedId, $cell->getNonce())] = 'setRowTextNormal';
+                    $action[Action\ActionTargetEnum::Cell->value][$cell->containerId()][$cell->cellId()]['modifyRows'][RowID::encrypt($selectedId, $cell->getNonce())] = 'setRowTextNormal';
                 }
             } else {
                 foreach ($this->rowIds as $rowId) {
-                    $action['LCell'][$cell->containerId()][$cell->cellId()]['modifyRows'][$rowId->getEncryptedRowId($cell->getNonce())] = 'setRowTextNormal';
+                    $action[Action\ActionTargetEnum::Cell->value][$cell->containerId()][$cell->cellId()]['modifyRows'][$rowId->getEncryptedRowId($cell->getNonce())] = 'setRowTextNormal';
                 }
             }
         }
