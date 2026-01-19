@@ -47,6 +47,7 @@ class AddRow extends Action
         foreach ($cells as $cell) {
             $contentClass = $cell->getContentClass();
             $grid         = ContentClassFactory::cellContent($contentClass, '', $cell);
+            $cell         = $grid->getCell();
             if ($grid instanceof Grid) {
                 $rowsToAdd = [];
                 foreach ($grid->getRows($this->values) as $rowObject) {
