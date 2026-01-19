@@ -1,3 +1,10 @@
+## [2.6.6](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.5...v2.6.6) (2026-01-19)
+
+
+### Bug Fixes
+
+* use correct cell for dynamic cell content ([10cc818](https://github.com/bespin-studios/byteshard-grid/commit/10cc818de2da25b6ac0ef045e541b77a6cc4093e))
+
 ## [2.6.5](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.4...v2.6.5) (2026-01-16)
 
 
