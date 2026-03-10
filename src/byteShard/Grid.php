@@ -194,7 +194,7 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
      * @throws Exception
      * @internal
      */
-    public function getCellContent(bool $resetNonce = true): ?ClientCell
+    public function getCellContent(bool $resetNonce = true, bool $keepSessionOpen = false): ?ClientCell
     {
         parent::getCellContent($resetNonce);
         $this->setRequestTimestamp();
@@ -218,7 +218,9 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
         $this->processNodeDefinitions();
 
         if (!empty($this->nodes) && count($this->columns) > 0) {
-            session_write_close();
+            if (!$keepSessionOpen) {
+                session_write_close();
+            }
 
             $this->queryData();
             if ($this->sort === true) {
@@ -477,7 +479,6 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
                     $onPoll       = new OnPoll();
                     $pollEvent    = $onPoll->getClientArray($this->cell->getNonce());
                     $this->pollId = $pollEvent['onPoll'];
-                    $events       = array_merge_recursive($events, $pollEvent);
                     break;
                 case OnSelectInterface::class:
                     $onSelect = new Grid\Event\OnSelect();
