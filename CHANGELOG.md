@@ -1,3 +1,10 @@
+## [2.6.7](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.6...v2.6.7) (2026-03-10)
+
+
+### Bug Fixes
+
+* keep session open needed for tabbar in cell ([8b51399](https://github.com/bespin-studios/byteshard-grid/commit/8b5139920c7e3716f9f3c6bf3773a8367160de37))
+
 ## [2.6.6](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.5...v2.6.6) (2026-01-19)
 
 
