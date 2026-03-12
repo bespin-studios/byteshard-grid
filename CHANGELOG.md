@@ -1,3 +1,10 @@
+# [2.7.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.7...v2.7.0) (2026-03-12)
+
+
+### Features
+
+* implement onDoubleClick event ([4e20efa](https://github.com/bespin-studios/byteshard-grid/commit/4e20efad7aee49d0d439c663c9ecdbcf3baa2c6f))
+
 ## [2.6.7](https://github.com/bespin-studios/byteshard-grid/compare/v2.6.6...v2.6.7) (2026-03-10)
 
 
