@@ -17,7 +17,6 @@ class OnDoubleClick extends Event\GridEvent implements Event\EventMigrationInter
 
     public function getClientArray(string $cellNonce): array
     {
-        //TODO: Implement double click events
-        return [];
+        return ['onRowDblClicked' => ['doOnRowDblClicked']];
     }
 }
