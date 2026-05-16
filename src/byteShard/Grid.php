@@ -17,6 +17,7 @@ use byteShard\Event\OnPollInterface;
 use byteShard\Event\OnSelectInterface;
 use byteShard\Grid\Column\RowSelector;
 use byteShard\Grid\CssClass;
+use byteShard\Grid\Enum\Width;
 use byteShard\Grid\Event\OnDrop;
 use byteShard\Grid\GridInterface;
 use byteShard\Grid\Node;
@@ -121,6 +122,20 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
     /** @var array<CssClass> */
     private array   $rowClasses = [];
     private ?string $pollId     = null;
+    private Width   $colWidth   = Width::PIXEL;
+    private Column  $autoWidthColumn;
+
+    public function setColWidth(Width $width): static
+    {
+        $this->colWidth = $width;
+        return $this;
+    }
+
+    public function setAutoWidthColumn(Column $column): static
+    {
+        $this->autoWidthColumn = $column;
+        return $this;
+    }
 
     public function onCellEdit(): EventResult
     {
@@ -458,6 +473,10 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
         if ($this->eventOnLinkClick === true) {
             $result[] = new ClientCellEvent('onLinkClick', 'doOnLinkClick');
         }
+        if (isset($this->autoWidthColumn)) {
+            $result[] = new ClientCellEvent('onResizeEnd', 'setAutoColumnOnResizeFinish');
+            $result[] = new ClientCellEvent('onResize', 'storeResizedColumnIndex');
+        }
         return $result;
     }
 
@@ -546,7 +565,10 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
 
     private function getJSMethodsAfterLoading(): array
     {
-        $methods = [];
+        $methods         = [];
+        if (isset($this->autoWidthColumn)) {
+            $methods['setAutoWidth'] = $this->autoWidthColumn->encryptedName;
+        }
         if ($this->smartRendering) {
             $methods['enableSmartRendering'] = true;
         }
@@ -556,14 +578,14 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
         if ($this->headerMenu) {
             $methods['enableHeaderMenu'] = '';
         }
-        if ($this->columnMove) {
+        if ($this->columnMove && !isset($this->autoWidthColumn)) {
             $methods['enableColumnMove'] = true;
         }
         if ($this->cookieOrderSaving) {
             $methods['loadOrderFromCookie'] = true;
             $methods['enableOrderSaving']   = true;
         }
-        if ($this->cookieSizeSaving) {
+        if ($this->cookieSizeSaving && !isset($this->autoWidthColumn)) {
             $methods['loadSizeFromCookie']   = true;
             $methods['enableAutoSizeSaving'] = true;
         }
@@ -760,7 +782,7 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
             }
             $localeCache = [];
 
-            $treeColumn    = null;
+            $treeColumn = null;
             foreach ($this->columnProxies as $columnProxy) {
                 if ($columnProxy->isTreeColumn()) {
                     $treeColumn = $columnProxy;
@@ -873,7 +895,7 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
             $call->addAttribute('command', 'attachHeader');
             SimpleXML::addChild($call, 'param', $filterString, null, true);
         }
-        $header?->addChild('settings')?->addChild('colwidth', 'px');
+        $header?->addChild('settings')?->addChild('colwidth', $this->colWidth->value);
         $exportWidthJson = json_encode($exportWidths);
         if ($exportWidthJson !== false) {
             $data = SimpleXML::addChild($this->outputXml, 'userdata', $exportWidthJson, null, true);

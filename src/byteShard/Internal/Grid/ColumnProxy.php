@@ -16,7 +16,6 @@ use byteShard\Grid\Column\Image;
 use byteShard\Grid\Column\Link;
 use byteShard\Grid\Column\RowSelector;
 use byteShard\Grid\Column\Tree;
-use byteShard\Grid\Enum\Filter;
 use byteShard\Grid\Enum\Type;
 use byteShard\Internal\SimpleXML;
 use byteShard\Locale;
