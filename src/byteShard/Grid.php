@@ -476,6 +476,7 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
         if (isset($this->autoWidthColumn)) {
             $result[] = new ClientCellEvent('onResizeEnd', 'setAutoColumnOnResizeFinish');
             $result[] = new ClientCellEvent('onResize', 'storeResizedColumnIndex');
+            $result[] = new ClientCellEvent('onSetSizes', 'restoreAutoColumn');
         }
         return $result;
     }
