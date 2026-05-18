@@ -1,3 +1,10 @@
+## [2.8.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.8.0...v2.8.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* restore auto column needs to be called anytime the window size changes ([8dadf50](https://github.com/bespin-studios/byteshard-grid/commit/8dadf506a2f31fd8a9684b1cd9030f7889ceb191))
+
 # [2.8.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.7.0...v2.8.0) (2026-05-16)
 
 
