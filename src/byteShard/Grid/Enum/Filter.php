@@ -20,4 +20,5 @@ enum Filter: string
     case NUMERIC = '#numeric_filter';
     case LINK = '#link_filter';
     case TRISTATE = '#tricheckbox_filter';
+    case NONE = '#no_filter';
 }

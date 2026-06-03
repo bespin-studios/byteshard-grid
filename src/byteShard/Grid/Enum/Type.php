@@ -61,4 +61,5 @@ enum Type: string
     case TIME = 'time';
     case TREE = 'tree';
     case DATERO = 'datero';
+    case BURNDOWN = 'burndown';
 }
