@@ -1,3 +1,10 @@
+# [2.9.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.8.1...v2.9.0) (2026-06-03)
+
+
+### Features
+
+* burndown column and no_filter for grid ([574ee51](https://github.com/bespin-studios/byteshard-grid/commit/574ee5133939dcbd280a6f1016e4fa662e415523))
+
 ## [2.8.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.8.0...v2.8.1) (2026-05-18)
 
 
