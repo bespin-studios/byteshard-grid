@@ -62,4 +62,5 @@ enum Type: string
     case TREE = 'tree';
     case DATERO = 'datero';
     case BURNDOWN = 'burndown';
+    case ROW_ACTIONS = 'rowactions';
 }

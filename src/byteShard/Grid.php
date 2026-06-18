@@ -15,6 +15,7 @@ use byteShard\Event\EventResult;
 use byteShard\Event\OnCellEditInterface;
 use byteShard\Event\OnPollInterface;
 use byteShard\Event\OnSelectInterface;
+use byteShard\Grid\Column\RowActions;
 use byteShard\Grid\Column\RowSelector;
 use byteShard\Grid\CssClass;
 use byteShard\Grid\Enum\Width;
@@ -115,6 +116,7 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
     private array  $columnData         = [];
     private string $rowSelectorColumn  = '';
     private bool   $cellContentDefined = false;
+    private array  $rowActionColumns   = [];
     /**
      * @var Style[]
      */
@@ -298,8 +300,8 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
             if ($columnAccessType > AccessType::NONE) {
                 // TODO: check if this needs to be called here and in getColumnDefinition.
                 $column->setLocaleBaseToken($baseLocale);
-                $events = $column->getEvents();
-                $column->getEncryptedName($nonce);
+                $events        = $column->getEvents();
+                $encryptedName = $column->getEncryptedName($nonce);
 
                 $this->columnValidations[] = $column->getClientValidations();
 
@@ -324,6 +326,8 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
                 $columnProxy = new ColumnProxy($column, $clientTimeZone, $serverTimeZone, $this->cell);
                 if ($column instanceof RowSelector) {
                     $this->rowSelectorColumn = $column->encryptedName;
+                } elseif ($column instanceof RowActions) {
+                    $this->rowActionColumns[$encryptedName] = $column->getRowActions();
                 }
                 if ($this->eventOnLinkClick === false && $columnProxy->hasJavascriptLink()) {
                     $this->eventOnLinkClick = true;
@@ -478,6 +482,9 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
             $result[] = new ClientCellEvent('onResize', 'storeResizedColumnIndex');
             $result[] = new ClientCellEvent('onSetSizes', 'restoreAutoColumn');
         }
+        if (!empty($this->rowActionColumns)) {
+            $result[] = new ClientCellEvent('onRowAction', 'doOnRowAction');
+        }
         return $result;
     }
 
@@ -556,6 +563,9 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
                 Deeplink::cleanupCookie();
             }
         }
+        if (!empty($this->rowActionColumns)) {
+            $methods['rowActions'] = $this->rowActionColumns;
+        }
         return array_filter($methods);
     }
 
@@ -566,7 +576,7 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
 
     private function getJSMethodsAfterLoading(): array
     {
-        $methods         = [];
+        $methods = [];
         if (isset($this->autoWidthColumn)) {
             $methods['setAutoWidth'] = $this->autoWidthColumn->encryptedName;
         }
