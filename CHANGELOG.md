@@ -1,3 +1,10 @@
+# [2.11.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.10.1...v2.11.0) (2026-06-21)
+
+
+### Features
+
+* use object properties for grid columns ([8239a71](https://github.com/bespin-studios/byteshard-grid/commit/8239a71e7fe7a8f410d4d8f342dee00db087a91e))
+
 ## [2.10.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.10.0...v2.10.1) (2026-06-21)
 
 
