@@ -1,3 +1,10 @@
+## [2.10.1](https://github.com/bespin-studios/byteshard-grid/compare/v2.10.0...v2.10.1) (2026-06-21)
+
+
+### Bug Fixes
+
+* setCellValue was not chainable ([e454936](https://github.com/bespin-studios/byteshard-grid/commit/e454936ab41bb248088f8703070bd63d245b3774))
+
 # [2.10.0](https://github.com/bespin-studios/byteshard-grid/compare/v2.9.0...v2.10.0) (2026-06-18)
 
 
