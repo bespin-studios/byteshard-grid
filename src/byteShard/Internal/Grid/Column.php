@@ -430,8 +430,16 @@ abstract class Column
 
     public function getEncryptedName(string $cellNonce = ''): string
     {
-        $encrypted['i'] = $this->id;
-        $validations    = $this->getValidations();
+        $encrypted['i']      = $this->id;
+        $nonce               = substr(md5($cellNonce.$this->id), 0, 24);
+        $this->encryptedName = Session::encrypt(json_encode($encrypted), $nonce);
+        return $this->encryptedName;
+    }
+
+    public function getObjectProperties(): array
+    {
+        $encrypted   = [];
+        $validations = $this->getValidations();
         if ($validations !== null) {
             $encrypted['v'] = $validations;
         }
@@ -445,10 +453,7 @@ abstract class Column
         }
         $encrypted['t'] = $gridColumnClass;
         $encrypted['l'] = $this->getLabel();
-        //$encrypted['c']
-        $nonce               = substr(md5($cellNonce.$this->id), 0, 24);
-        $this->encryptedName = Session::encrypt(json_encode($encrypted), $nonce);
-        return $this->encryptedName;
+        return $encrypted;
     }
 
     public function isCdata(): bool

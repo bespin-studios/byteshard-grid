@@ -122,10 +122,11 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
      */
     private array $rowStyles = [];
     /** @var array<CssClass> */
-    private array   $rowClasses = [];
-    private ?string $pollId     = null;
-    private Width   $colWidth   = Width::PIXEL;
+    private array   $rowClasses       = [];
+    private ?string $pollId           = null;
+    private Width   $colWidth         = Width::PIXEL;
     private Column  $autoWidthColumn;
+    private array   $objectProperties = [];
 
     public function setColWidth(Width $width): static
     {
@@ -261,7 +262,7 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
             $this->selectLastSelectedRow();
         }
         $pre             = $this->getJSMethodsBeforeLoading();
-        $pre['settings'] = $this->getSettings();
+        $pre['settings'] = $this->getSettings($nonce);
         $pre['cn']       = base64_encode($nonce);
         $components[]    = new ContentComponent(
             type   : $this->contentType,
@@ -302,6 +303,7 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
                 $column->setLocaleBaseToken($baseLocale);
                 $events        = $column->getEvents();
                 $encryptedName = $column->getEncryptedName($nonce);
+                $this->objectProperties[$column->getId()] = $column->getObjectProperties();
 
                 $this->columnValidations[] = $column->getClientValidations();
 
@@ -516,7 +518,7 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
         return $events;
     }
 
-    private function getSettings(): array
+    private function getSettings(string $nonce): array
     {
         $cookieName           = $this->getCookieName();
         $cookieExpirationDate = 'expires='.(new DateTime('now'))->modify('+10 years')->format('D, d M Y').' 23:00:00 GMT';
@@ -532,6 +534,13 @@ abstract class Grid extends CellContent implements GridInterface, OnCellEditInte
         ];
         if ($this->rowSelectorColumn !== '') {
             $settings['rowSelector'] = $this->rowSelectorColumn;
+        }
+        if (!empty($this->objectProperties)) {
+            if (extension_loaded('zlib') === true) {
+                $settings['op'] = Session::encrypt(gzcompress(json_encode($this->objectProperties), 9), $nonce);
+            } else {
+                $settings['op'] = Session::encrypt(json_encode($this->objectProperties), $nonce);
+            }
         }
         return $settings;
     }
